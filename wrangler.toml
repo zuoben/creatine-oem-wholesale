@@ -1,5 +1,5 @@
-# Cloudflare Pages — static Astro output
-# Dashboard: build command `npm run build`, output directory `dist`
 name = "creatine-oem-wholesale"
 compatibility_date = "2026-09-22"
-pages_build_output_dir = "dist"
+
+[assets]
+directory = "./dist"
