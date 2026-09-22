@@ -1,0 +1,107 @@
+---
+import '~/assets/styles/tailwind.css';
+
+import { I18N } from 'astrowind:config';
+
+import CommonMeta from '~/components/common/CommonMeta.astro';
+import Favicons from '~/components/Favicons.astro';
+import CustomStyles from '~/components/CustomStyles.astro';
+import ApplyColorMode from '~/components/common/ApplyColorMode.astro';
+import Metadata from '~/components/common/Metadata.astro';
+import SiteVerification from '~/components/common/SiteVerification.astro';
+import Analytics from '~/components/common/Analytics.astro';
+import GoogleTagManager from '~/components/common/GoogleTagManager.astro';
+import LeadAttribution from '~/components/common/LeadAttribution.astro';
+import BasicScripts from '~/components/common/BasicScripts.astro';
+import WhatsAppButton from '~/components/WhatsAppButton.astro';
+import WhatsAppLeadGate from '~/components/WhatsAppLeadGate.astro';
+import { DEFAULT_WHATSAPP_MESSAGE, getWhatsAppUrl } from '~/utils/whatsapp';
+import { getInquiryForm } from '~/i18n/forms';
+import { getLocaleFromPath, LOCALE_META, WHATSAPP_BY_LOCALE } from '~/i18n/locales';
+
+import type { MetaData as MetaDataType } from '~/types';
+
+export interface Props {
+  metadata?: MetaDataType;
+  contactBtn?: boolean;
+  showWhatsAppButton?: boolean;
+  /** Public-site visual theme. Landing / internal omit this. */
+  pageTheme?: 'creatine' | 'mahjong';
+}
+
+const { metadata = {}, contactBtn = true, showWhatsAppButton = true, pageTheme } = Astro.props;
+const isCreatineTheme = pageTheme === 'creatine';
+const isMahjongTheme = pageTheme === 'mahjong';
+const isBrandedTheme = isCreatineTheme || isMahjongTheme;
+const themeClass = isCreatineTheme ? 'theme-creatine' : isMahjongTheme ? 'theme-mahjong' : undefined;
+const locale = getLocaleFromPath(Astro.url.pathname);
+const language = LOCALE_META[locale].htmlLang;
+const { textDirection } = I18N;
+const waMessage = WHATSAPP_BY_LOCALE[locale] || DEFAULT_WHATSAPP_MESSAGE;
+const whatsappUrl = getWhatsAppUrl(waMessage);
+const inquiry = getInquiryForm(locale);
+const waLead = inquiry.waLead;
+---
+
+<!doctype html>
+<html
+  lang={language}
+  dir={textDirection}
+  class:list={['2xl:text-[20px] overflow-x-hidden', themeClass]}
+  data-page-theme={isCreatineTheme ? 'creatine' : isMahjongTheme ? 'mahjong' : undefined}
+>
+  <head>
+    <meta charset="UTF-8" />
+    <GoogleTagManager snippet="head" />
+    <CommonMeta />
+    <Favicons />
+    <CustomStyles />
+    {!isBrandedTheme && <ApplyColorMode />}
+    {
+      isBrandedTheme && themeClass && (
+        <script is:inline define:vars={{ themeClass }}>
+          document.documentElement.classList.add(themeClass);
+          document.documentElement.classList.remove('dark');
+        </script>
+      )
+    }
+    <Metadata {...metadata} />
+    <SiteVerification />
+    <LeadAttribution />
+    <!-- GA / GTM deferred (idle) so they do not compete with LCP/FCP -->
+    <Analytics />
+  </head>
+
+  <body
+    class:list={[
+      'min-w-0 overflow-x-hidden antialiased text-default bg-page tracking-tight',
+      themeClass,
+    ]}
+  >
+    <GoogleTagManager snippet="noscript" />
+
+    <slot />
+
+    <!-- Floating contact UI: body only (never in head) -->
+    {
+      showWhatsAppButton && (
+        <>
+          <WhatsAppButton
+            {contactBtn}
+            whatsappUrl={whatsappUrl}
+            button={inquiry.button}
+            description={inquiry.description}
+            inputs={inquiry.inputs}
+            textarea={inquiry.textarea}
+            disclaimer={inquiry.disclaimer}
+            closeLabel={inquiry.close}
+            preferChat={inquiry.preferChat}
+          />
+          <WhatsAppLeadGate {...waLead} defaultMessage={waMessage} whatsappUrl={whatsappUrl} />
+        </>
+      )
+    }
+
+    <BasicScripts />
+  </body>
+</html>

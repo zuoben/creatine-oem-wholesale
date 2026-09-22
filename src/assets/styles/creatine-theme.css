@@ -1,0 +1,83 @@
+/* Crest Creatine — clean scientific / sports B2B theme. Gated by html.theme-creatine. */
+
+html.theme-creatine {
+  --aw-color-primary: #0f766e;
+  --aw-color-secondary: #115e59;
+  --aw-color-accent: #0369a1;
+  --aw-color-text-heading: #0f172a;
+  --aw-color-text-default: #1e293b;
+  --aw-color-text-muted: #64748b;
+  --aw-color-bg-page: #f8fafc;
+  --aw-font-heading: 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+  color-scheme: light;
+}
+
+html.theme-creatine body {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+html.theme-creatine [data-aw-toggle-color-scheme] {
+  display: none;
+}
+
+html.theme-creatine h1,
+html.theme-creatine h2,
+html.theme-creatine .font-heading {
+  font-family: 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+html.theme-creatine #header {
+  border-color: #e2e8f0;
+}
+
+html.theme-creatine #header > div:first-child {
+  background-color: rgba(248, 250, 252, 0.92);
+}
+
+html.theme-creatine #header.scroll > div:first-child {
+  background-color: rgba(248, 250, 252, 0.96);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: none;
+}
+
+html.theme-creatine #header .dropdown-menu {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+html.theme-creatine footer {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+html.theme-creatine .btn {
+  border-radius: 0.375rem;
+}
+
+html.theme-creatine .btn-primary {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #f8fafc;
+}
+
+html.theme-creatine .btn-primary:hover {
+  background: #115e59;
+  border-color: #115e59;
+  color: #f8fafc;
+}
+
+html.theme-creatine .text-accent {
+  color: #0369a1;
+}
+
+html.theme-creatine .disclaimer-box {
+  border-left: 3px solid #94a3b8;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: 0.75rem 1rem;
+  margin-top: 1.5rem;
+}

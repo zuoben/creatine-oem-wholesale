@@ -1,0 +1,18 @@
+---
+import { SITE } from 'astrowind:config';
+
+const name = SITE?.name || 'Crest Creatine';
+---
+
+<span
+  class="self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white inline-flex items-center gap-2.5"
+>
+  <span
+    class="h-9 w-9 rounded-md bg-teal-700 text-white text-sm font-bold inline-flex items-center justify-center shrink-0"
+    aria-hidden="true"
+  >CC</span>
+  <span class="hidden sm:inline tracking-tight leading-tight">
+    <span class="block text-[0.95em]">{name}</span>
+  </span>
+  <span class="sr-only">{name}</span>
+</span>

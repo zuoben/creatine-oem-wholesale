@@ -1,0 +1,150 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Features from '~/components/widgets/Features.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { getSiteUrl } from '~/utils/site-url';
+import {
+  buildOrganizationSchema,
+  buildManufacturingPlantSchema,
+  ORGANIZATION_ID,
+} from '~/utils/organization-schema';
+
+const siteUrl = getSiteUrl();
+
+const metadata = {
+  title: 'Private Label Creatine OEM & Wholesale | Crest Creatine',
+  description:
+    'B2B creatine manufacturer — OEM / private label creatine powder & gummies, wholesale carton pricing, samples, COA & third-party testing. Quote within 24 hours.',
+  ignoreTitleTemplate: true,
+};
+
+const faqItems = [
+  {
+    title: 'Do you offer both OEM / private label and wholesale?',
+    description:
+      'Yes. <strong>OEM / private label</strong> for brands that need custom formulas, flavors, and packaging; <strong>wholesale</strong> for distributors, gyms, and online sellers buying standard carton SKUs.',
+  },
+  {
+    title: 'What creatine formats can you private-label?',
+    description:
+      'Creatine monohydrate <strong>powder</strong> and <strong>gummies</strong>, with custom flavors, serving sizes, and branded packaging options subject to MOQ.',
+  },
+  {
+    title: 'Can I get samples before placing a bulk order?',
+    description:
+      'Yes. Sample-first is recommended for flavor, texture, and label review. Ask via the <a href="/contact?looking=Sample#inquiry-form" class="underline text-primary">inquiry form</a>.',
+  },
+  {
+    title: 'Do you provide COA or third-party testing?',
+    description:
+      'We support lot-level documentation and third-party testing pathways appropriate for dietary supplement buyers. Details are confirmed during quote.',
+  },
+  {
+    title: 'Is this a US consumer retail store?',
+    description:
+      'No. Crest Creatine is a <strong>B2B</strong> OEM and wholesale site for brands and channel partners — not a DTC subscribe or add-to-cart shop.',
+  },
+];
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Crest Creatine',
+  url: `${siteUrl}/`,
+  description: metadata.description,
+  publisher: { '@id': ORGANIZATION_ID },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map(({ title, description }) => ({
+    '@type': 'Question',
+    name: title,
+    acceptedAnswer: { '@type': 'Answer', text: description.replace(/<[^>]+>/g, '') },
+  })),
+};
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    tagline="B2B Creatine Manufacturer"
+    actions={[
+      { variant: 'primary', text: 'OEM / Private Label', href: '/oem', icon: 'tabler:building-factory-2' },
+      { text: 'Wholesale', href: '/wholesale', icon: 'tabler:building-store' },
+    ]}
+  >
+    <Fragment slot="title">
+      Private Label Creatine &amp; <span class="text-accent dark:text-white">Wholesale Supply</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Crest Creatine helps brands and distributors source creatine monohydrate powder and gummies — OEM / private label
+      programs and standard wholesale cartons, with samples, COA support, and quotes within 24 hours.
+    </Fragment>
+  </Hero>
+
+  <Features
+    id="trust"
+    tagline="Why partners choose us"
+    title="Built for B2B creatine sourcing"
+    subtitle="MOQ clarity, sample-first OEM, documentation, and fast quotes — without retail cart noise."
+    columns={2}
+    items={[
+      { title: 'Flexible MOQ', description: 'Trial MOQs for private label pilots; carton MOQs for wholesale SKUs.', icon: 'tabler:package' },
+      { title: 'Samples available', description: 'Approve formula, flavor, and packaging before bulk production.', icon: 'tabler:flask' },
+      { title: 'COA & testing', description: 'Lot COA pathways and third-party testing support for US-bound brands.', icon: 'tabler:file-certificate' },
+      { title: '24h quote', description: 'Working-day reply on OEM RFQs and wholesale price-list requests.', icon: 'tabler:clock' },
+    ]}
+  />
+
+  <Features2
+    tagline="Two ways to buy"
+    title="OEM / Private Label or Wholesale"
+    columns={2}
+    items={[
+      {
+        title: 'OEM / Private Label',
+        description:
+          'Custom creatine powder and gummies — flavors, packaging, branding, and compliance docs for your label. Ideal for brands launching or expanding a creatine SKU.',
+        icon: 'tabler:palette',
+      },
+      {
+        title: 'Wholesale',
+        description:
+          'Standard carton specs for distributors, gyms, retailers, and online sellers. Request a price list and account guidance via the wholesale inquiry form.',
+        icon: 'tabler:truck-delivery',
+      },
+    ]}
+  />
+
+  <Steps
+    title="How sourcing works"
+    items={[
+      { title: 'Tell us your channel', description: 'OEM project or wholesale account — buyer type, volume, and ship-to country.', icon: 'tabler:message' },
+      { title: 'Get MOQ & samples', description: 'We reply with tiered MOQs, sample options, and documentation available for your market.', icon: 'tabler:package' },
+      { title: 'Approve & produce', description: 'Lock formula, flavor, and packaging (OEM) or carton SKUs (wholesale), then schedule production.', icon: 'tabler:circle-check-filled' },
+      { title: 'Ship & reorder', description: 'Export packing support and repeat-order pathways for ongoing monthly volume.', icon: 'tabler:truck-delivery' },
+    ]}
+  />
+
+  <FAQs id="faq" title="Creatine OEM & wholesale FAQ" items={faqItems} />
+
+  <CallToAction
+    title="Ready for a factory quote?"
+    subtitle="Share buyer type, looking-for, and volume — we respond on working days within 24 hours."
+    actions={[
+      { variant: 'primary', text: 'Open inquiry form', href: '/contact#inquiry-form' },
+      { text: 'OEM details', href: '/oem' },
+      { text: 'Wholesale details', href: '/wholesale' },
+    ]}
+  />
+
+  <script type="application/ld+json" set:html={JSON.stringify(buildOrganizationSchema())} />
+  <script type="application/ld+json" set:html={JSON.stringify(buildManufacturingPlantSchema())} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</Layout>

@@ -1,0 +1,487 @@
+---
+/**
+ * Landing-page WhatsApp lead gate:
+ * intercept business wa.me clicks → collect form → save inquiry → open WhatsApp.
+ */
+import { Icon } from 'astro-icon/components';
+import Form from '~/components/ui/Form.astro';
+import type { Disclaimer, Input, Textarea } from '~/types';
+import { DEFAULT_WHATSAPP_MESSAGE, getWhatsAppUrl } from '~/utils/whatsapp';
+
+export interface Props {
+  /** Override default WA lead fields (e.g. product-specific selects) */
+  inputs?: Input[];
+  textarea?: Textarea;
+  disclaimer?: Disclaimer;
+  button?: string;
+  description?: string;
+  title?: string;
+  subtitle?: string;
+  /** Default prefilled message when opening WhatsApp after submit */
+  defaultMessage?: string;
+  /** Override destination WhatsApp URL (phone + default text) */
+  whatsappUrl?: string;
+}
+
+const {
+  inputs: inputsProp,
+  textarea: textareaProp,
+  disclaimer: disclaimerProp,
+  button = 'Continue to WhatsApp',
+  description = 'We save your inquiry, then open WhatsApp.',
+  title = 'Chat on WhatsApp',
+  subtitle = 'Leave your details — WhatsApp opens right after.',
+  defaultMessage = DEFAULT_WHATSAPP_MESSAGE,
+  whatsappUrl: whatsappUrlProp,
+} = Astro.props as Props;
+
+const defaultWhatsappUrl = whatsappUrlProp || getWhatsAppUrl();
+
+const defaultInputs: Input[] = [
+  { type: 'text', name: 'name', label: 'Name', placeholder: 'Your name' },
+  { type: 'email', name: 'email', label: 'Email', placeholder: 'you@company.com' },
+  {
+    type: 'text',
+    name: 'company',
+    label: 'Company / Brand',
+    placeholder: 'Optional',
+    required: false,
+  },
+];
+
+const inputs = inputsProp?.length ? inputsProp : defaultInputs;
+const textarea: Textarea = textareaProp ?? {
+  label: 'Message',
+  name: 'message',
+  placeholder: 'Product, MOQ, market, certifications…',
+  rows: 2,
+};
+const disclaimer: Disclaimer = disclaimerProp ?? {
+  label: 'You agree we may contact you about this OEM / wholesale inquiry.',
+};
+
+/** Avoid clobbering a real buyer-type `channel` select with a hidden WhatsApp tag */
+const hasChannelField = inputs.some((f) => f.name === 'channel' || f.name === 'your-channel');
+---
+
+<div
+  id="wa-lead-modal"
+  class="fixed inset-0 z-[70] hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="wa-lead-title"
+  data-default-wa-url={defaultWhatsappUrl}
+  data-default-wa-msg={defaultMessage}
+>
+  <div
+    class="wa-lead-backdrop absolute inset-0 bg-black/50 backdrop-blur-[2px]"
+    data-wa-lead-close
+    aria-hidden="true"
+  >
+  </div>
+  <div class="relative flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
+    <!-- Shell: fixed header + scrollable fields + fixed submit -->
+    <div
+      class="pointer-events-auto flex w-full min-w-0 sm:max-w-md max-h-[min(90vh,720px)] flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-gray-200 dark:border-slate-700"
+    >
+      <!-- Fixed header -->
+      <div
+        class="shrink-0 flex items-start justify-between gap-2 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 sm:px-5 pt-3.5 pb-3"
+      >
+        <div class="min-w-0">
+          <h2
+            id="wa-lead-title"
+            class="text-base sm:text-lg font-bold font-heading text-default flex items-center gap-2"
+          >
+            <span
+              class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#25D366]"
+              data-wa-accent
+              aria-hidden="true"
+            >
+              <Icon name="tabler:brand-whatsapp" class="w-4 h-4 text-white" />
+            </span>
+            {title}
+          </h2>
+          <p class="text-xs text-muted mt-0.5 leading-snug">
+            {subtitle}
+          </p>
+        </div>
+        <button
+          type="button"
+          class="shrink-0 flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          data-wa-lead-close
+          aria-label="Close WhatsApp form"
+        >
+          <Icon name="tabler:x" class="w-4 h-4 pointer-events-none" aria-hidden="true" />
+        </button>
+      </div>
+
+      <!-- Form fills remaining height; internal stickyActions pins the button -->
+      <div id="wa-lead-form-wrap" class="flex min-h-0 flex-1 flex-col">
+        <Form
+          formId="wa-lead"
+          compact
+          stickyActions
+          class="min-h-0 flex-1"
+          button={button}
+          description={description}
+          inputs={inputs}
+          textarea={textarea}
+          disclaimer={disclaimer}
+        />
+        <!-- CRM: mark entry as WhatsApp CTA; do not override buyer-type channel select -->
+        {!hasChannelField && <input type="hidden" form="wa-lead-form" name="channel" value="WhatsApp" />}
+        <input type="hidden" form="wa-lead-form" name="contact_intent" value="whatsapp_cta" />
+      </div>
+
+      <!-- Success / transition state after submit -->
+      <div
+        id="wa-lead-success"
+        class="hidden min-h-0 flex-1 flex-col items-center justify-center px-6 py-10 text-center"
+        role="status"
+        aria-live="polite"
+        aria-hidden="true"
+      >
+        <div
+          class="wa-success-check mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366]"
+          data-wa-accent
+          aria-hidden="true"
+        >
+          <svg class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-default">You're all set!</h3>
+        <p class="mt-1.5 max-w-xs text-sm text-muted leading-relaxed">
+          We saved your details. Opening WhatsApp so you can chat with our team.
+        </p>
+        <p id="wa-lead-countdown" class="mt-4 text-xs font-medium tabular-nums text-slate-500">
+          Opening in <span data-wa-count>2</span>s…
+        </p>
+        <a
+          id="wa-lead-open-now"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#20ba5c]"
+          data-wa-accent
+        >
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+            ></path>
+          </svg>
+          Open WhatsApp now
+        </a>
+        <button
+          type="button"
+          data-wa-lead-close
+          class="mt-3 text-xs text-muted underline-offset-2 hover:underline"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes wa-check-pop {
+    0% {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.08);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  .wa-success-check {
+    animation: wa-check-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+</style>
+
+<script>
+  const MODAL_ID = 'wa-lead-modal';
+  const FORM_ID = 'wa-lead-form';
+
+  let pendingWhatsAppUrl = '';
+  let escBound = false;
+  let clickBound = false;
+  let successBound = false;
+
+  function getModal(): HTMLElement | null {
+    return document.getElementById(MODAL_ID);
+  }
+
+  function getDefaultWaUrl(): string {
+    const modal = getModal();
+    return modal?.dataset.defaultWaUrl || 'https://wa.me/';
+  }
+
+  function getDefaultWaMsg(): string {
+    const modal = getModal();
+    return (
+      modal?.dataset.defaultWaMsg ||
+      'Hello, I would like to inquire about American Mah Jongg factory-direct wholesale / OEM.'
+    );
+  }
+
+  /** Business contact links only — not social share `wa.me/?text=...` */
+  function isBusinessWhatsAppHref(href: string): boolean {
+    try {
+      const u = new URL(href, window.location.origin);
+      if (!/(^|\.)wa\.me$/i.test(u.hostname) && !/whatsapp\.com$/i.test(u.hostname)) return false;
+      // wa.me/<phone> or api.whatsapp.com/send?phone=
+      if (/^\/\d{8,}/.test(u.pathname)) return true;
+      if (u.searchParams.get('phone')) return true;
+      return false;
+    } catch {
+      return /wa\.me\/\d{8,}/i.test(href);
+    }
+  }
+
+  function extractPhoneFromWaUrl(href: string): string | null {
+    try {
+      const u = new URL(href, window.location.origin);
+      const phoneParam = u.searchParams.get('phone');
+      if (phoneParam) return phoneParam.replace(/\D/g, '');
+      const m = u.pathname.match(/\/(\d{8,})/);
+      return m?.[1] ?? null;
+    } catch {
+      const m = href.match(/wa\.me\/(\d{8,})/i);
+      return m?.[1] ?? null;
+    }
+  }
+
+  function buildPersonalizedWhatsAppUrl(
+    baseHref: string,
+    detail: { name?: string; email?: string; message?: string }
+  ): string {
+    const phone = extractPhoneFromWaUrl(baseHref) || extractPhoneFromWaUrl(getDefaultWaUrl());
+    if (!phone) return baseHref || getDefaultWaUrl();
+
+    const name = (detail.name || '').trim();
+    const email = (detail.email || '').trim();
+    const message = (detail.message || '').trim();
+    const defaultMsg = getDefaultWaMsg();
+
+    const lines = [
+      name || email ? `Hello, I'm ${[name, email && `(${email})`].filter(Boolean).join(' ')}.` : 'Hello,',
+      message || defaultMsg,
+    ].filter(Boolean);
+
+    return `https://wa.me/${phone}?text=${encodeURIComponent(lines.join('\n'))}`;
+  }
+
+  let openTimer: number | null = null;
+  let countTimer: number | null = null;
+  let pendingOpenUrl = '';
+
+  function clearOpenTimers() {
+    if (openTimer !== null) {
+      window.clearTimeout(openTimer);
+      openTimer = null;
+    }
+    if (countTimer !== null) {
+      window.clearInterval(countTimer);
+      countTimer = null;
+    }
+  }
+
+  function resetWaLeadUi() {
+    clearOpenTimers();
+    pendingOpenUrl = '';
+    const formWrap = document.getElementById('wa-lead-form-wrap');
+    const success = document.getElementById('wa-lead-success');
+    formWrap?.classList.remove('hidden');
+    if (success) {
+      success.classList.add('hidden');
+      success.classList.remove('flex');
+      success.setAttribute('aria-hidden', 'true');
+    }
+    const form = document.getElementById(FORM_ID) as HTMLFormElement | null;
+    const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.removeAttribute('aria-busy');
+      // Prefer original label from button text if still present; gate pages use Continue to WhatsApp
+      if (!submitBtn.textContent?.trim() || submitBtn.querySelector('svg')) {
+        submitBtn.textContent = 'Continue to WhatsApp';
+      }
+    }
+  }
+
+  function showSuccessUi(whatsappUrl: string) {
+    const formWrap = document.getElementById('wa-lead-form-wrap');
+    const success = document.getElementById('wa-lead-success');
+    const openNow = document.getElementById('wa-lead-open-now') as HTMLAnchorElement | null;
+    const countEl = document.querySelector<HTMLElement>('[data-wa-count]');
+    if (!success) return;
+
+    pendingOpenUrl = whatsappUrl;
+    formWrap?.classList.add('hidden');
+    success.classList.remove('hidden');
+    success.classList.add('flex');
+    success.setAttribute('aria-hidden', 'false');
+
+    if (openNow) {
+      openNow.href = whatsappUrl;
+      openNow.onclick = (e) => {
+        e.preventDefault();
+        clearOpenTimers();
+        openWhatsApp(whatsappUrl);
+      };
+    }
+
+    let remaining = 2;
+    if (countEl) countEl.textContent = String(remaining);
+    clearOpenTimers();
+    countTimer = window.setInterval(() => {
+      remaining -= 1;
+      if (countEl) countEl.textContent = String(Math.max(remaining, 0));
+      if (remaining <= 0 && countTimer !== null) {
+        window.clearInterval(countTimer);
+        countTimer = null;
+      }
+    }, 1000);
+
+    openTimer = window.setTimeout(() => {
+      openWhatsApp(whatsappUrl);
+      openTimer = null;
+    }, 2000);
+  }
+
+  function openWaLeadModal(whatsappUrl: string) {
+    const modal = getModal();
+    if (!modal) return;
+    // Main-site mail FAB may already be open — hide it so this gate is the only dialog
+    document.getElementById('fab-contact-modal')?.classList.add('hidden');
+    resetWaLeadUi();
+    pendingWhatsAppUrl = whatsappUrl || getDefaultWaUrl();
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    const firstInput = modal.querySelector(
+      '#wa-lead-form-wrap input:not([type="hidden"]), #wa-lead-form-wrap select, #wa-lead-form-wrap textarea'
+    );
+    if (firstInput instanceof HTMLElement) {
+      setTimeout(() => firstInput.focus(), 50);
+    }
+    // reCAPTCHA must render after the modal is visible (hidden parents break the widget)
+    requestAnimationFrame(() => {
+      document.dispatchEvent(
+        new CustomEvent('inquiry-form:show-turnstile', { detail: { formId: FORM_ID } })
+      );
+    });
+    // Second pass after layout/paint (iframe sizing)
+    window.setTimeout(() => {
+      document.dispatchEvent(
+        new CustomEvent('inquiry-form:show-turnstile', { detail: { formId: FORM_ID } })
+      );
+    }, 200);
+  }
+
+  function closeWaLeadModal() {
+    const modal = getModal();
+    if (!modal) return;
+    clearOpenTimers();
+    modal.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    // Defer UI reset so close animation isn't jarring
+    window.setTimeout(() => resetWaLeadUi(), 200);
+  }
+
+  function openWhatsApp(url: string) {
+    const finalUrl = url || pendingOpenUrl || getDefaultWaUrl();
+    window.open(finalUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  function initWaLeadGate() {
+    const modal = getModal();
+    if (!modal) return;
+
+    if (modal.dataset.closeBound !== '1') {
+      modal.dataset.closeBound = '1';
+      modal.querySelectorAll('[data-wa-lead-close]').forEach((el) => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeWaLeadModal();
+        });
+      });
+      // Delegation fallback (SVG clicks inside close button)
+      modal.addEventListener('click', (e) => {
+        const t = e.target;
+        if (t instanceof Element && t.closest('[data-wa-lead-close]')) {
+          e.preventDefault();
+          closeWaLeadModal();
+        }
+      });
+    }
+
+    if (!escBound) {
+      escBound = true;
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        const m = getModal();
+        if (m && !m.classList.contains('hidden')) closeWaLeadModal();
+      });
+    }
+
+    if (!clickBound) {
+      clickBound = true;
+      document.addEventListener(
+        'click',
+        (e) => {
+          if (!getModal()) return;
+          const target = e.target;
+          if (!(target instanceof Element)) return;
+          const anchor = target.closest('a[href*="wa.me"], a[href*="whatsapp.com"]');
+          if (!(anchor instanceof HTMLAnchorElement)) return;
+          const href = anchor.href;
+          if (!href || !isBusinessWhatsAppHref(href)) return;
+          // Don't re-intercept while already inside the WA lead modal
+          if (anchor.closest(`#${MODAL_ID}`)) return;
+
+          e.preventDefault();
+          e.stopPropagation();
+          openWaLeadModal(href);
+        },
+        true
+      );
+    }
+
+    if (!successBound) {
+      successBound = true;
+      document.addEventListener('inquiry-form:success', ((e: CustomEvent) => {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement) || form.id !== FORM_ID) return;
+        if (!getModal()) return;
+
+        const detail = (e.detail || {}) as {
+          name?: string;
+          email?: string;
+          message?: string;
+        };
+        const base = pendingWhatsAppUrl || getDefaultWaUrl();
+        const url = buildPersonalizedWhatsAppUrl(base, detail);
+
+        // Interactive success state → auto-open WhatsApp after countdown
+        showSuccessUi(url);
+
+        const dataLayer = (window as Window & { dataLayer?: Record<string, unknown>[] }).dataLayer;
+        dataLayer?.push({
+          event: 'whatsapp_lead_form_success',
+        });
+      }) as EventListener);
+    }
+  }
+
+  initWaLeadGate();
+  document.addEventListener('astro:page-load', initWaLeadGate);
+  document.addEventListener('astro:after-swap', initWaLeadGate);
+</script>

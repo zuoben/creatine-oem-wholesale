@@ -1,0 +1,107 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import ContactUs from '~/components/widgets/Contact.astro';
+import { getWhatsAppUrl } from '~/utils/whatsapp';
+import { buildContactPageSchema } from '~/utils/organization-schema';
+import {
+  inquiryFormButton,
+  inquiryFormDescription,
+  inquiryFormDisclaimer,
+  inquiryFormInputs,
+  inquiryFormTextarea,
+} from '~/data/inquiry-form';
+
+const whatsappUrl = getWhatsAppUrl();
+
+const metadata = {
+  title: 'Contact | Creatine OEM & Wholesale Quote',
+  description:
+    'Contact Crest Creatine for private label creatine OEM quotes, wholesale price lists, and samples. B2B inquiry form — reply within 24 hours on working days.',
+  ignoreTitleTemplate: true,
+};
+
+const faqItems = [
+  {
+    title: 'How fast do you reply?',
+    description: 'Typically within <strong>24 hours</strong> on working days when you include buyer type, looking-for, volume, and ship-to country.',
+  },
+  {
+    title: 'What should I include for an accurate quote?',
+    description: 'Format (powder / gummies), OEM vs wholesale, expected volume, packaging preferences, destination, and any COA/testing needs.',
+  },
+  {
+    title: 'Can I request samples?',
+    description: 'Yes — choose <strong>Sample</strong> under “I’m looking for”, or mention sample needs in the message.',
+  },
+];
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    actions={[
+      { variant: 'primary', text: 'Go to inquiry form', href: '#inquiry-form', icon: 'tabler:send' },
+      { text: 'WhatsApp', href: whatsappUrl, target: '_blank' },
+    ]}
+  >
+    <Fragment slot="title">Contact <span class="text-accent dark:text-white">Crest Creatine</span></Fragment>
+    <Fragment slot="subtitle">
+      B2B quotes for OEM / private label and wholesale creatine. Structured form below — WhatsApp optional.
+    </Fragment>
+  </Hero>
+
+  <ContactUs
+    id="inquiry-form"
+    title="B2B inquiry form"
+    subtitle="Select buyer type, what you need, and volume. We follow up with MOQ tiers and next steps."
+    compact
+    inputs={inquiryFormInputs}
+    textarea={inquiryFormTextarea}
+    disclaimer={inquiryFormDisclaimer}
+    button={inquiryFormButton}
+    description={inquiryFormDescription}
+  />
+
+  <script is:inline>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var looking = params.get('looking') || params.get('channel');
+        if (!looking) return;
+        var sel = document.querySelector('#inquiry-form select[name="channel"], form[data-inquiry-form] select[name="channel"]');
+        if (sel) {
+          var opts = Array.prototype.slice.call(sel.options);
+          var match = opts.find(function (o) { return o.value === looking || o.value.toLowerCase() === looking.toLowerCase(); });
+          if (match) sel.value = match.value;
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <Features2
+    tagline="Channels"
+    title="How we help"
+    columns={3}
+    items={[
+      { title: 'OEM / Private label', description: 'Powder & gummies programs, sampling, packaging.', icon: 'tabler:building-factory-2' },
+      { title: 'Wholesale', description: 'Carton specs, MOQ tiers, price-list requests.', icon: 'tabler:building-store' },
+      { title: 'Samples & docs', description: 'Sample kits, COA pathways, testing options.', icon: 'tabler:flask' },
+    ]}
+  />
+
+  <FAQs title="Inquiry FAQ" items={faqItems} />
+
+  <CallToAction
+    title="Prefer WhatsApp?"
+    subtitle="Send buyer type and volume — we continue the quote in chat."
+    actions={[
+      { variant: 'primary', text: 'Open WhatsApp', href: whatsappUrl, target: '_blank' },
+      { text: 'Home', href: '/' },
+    ]}
+  />
+
+  <script type="application/ld+json" set:html={JSON.stringify(buildContactPageSchema())} />
+</Layout>

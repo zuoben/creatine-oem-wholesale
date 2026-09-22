@@ -1,0 +1,35 @@
+---
+import '~/assets/styles/creatine-theme.css';
+import Layout from '~/layouts/Layout.astro';
+import Header from '~/components/widgets/Header.astro';
+import Footer from '~/components/widgets/Footer.astro';
+
+import { getHeaderFooter } from '~/i18n/nav';
+import { getLocaleFromPath } from '~/i18n/locales';
+
+import type { MetaData } from '~/types';
+
+export interface Props {
+  metadata?: MetaData;
+  contactBtn?: boolean;
+  showWhatsAppButton?: boolean;
+  pageTheme?: 'creatine';
+}
+
+const { metadata, contactBtn = true, showWhatsAppButton = true, pageTheme = 'creatine' } = Astro.props;
+
+const locale = getLocaleFromPath(Astro.url.pathname);
+const { header: hd, footer: fd } = getHeaderFooter(locale);
+---
+
+<Layout metadata={metadata} contactBtn={contactBtn} showWhatsAppButton={showWhatsAppButton} pageTheme={pageTheme}>
+  <slot name="header">
+    <Header {...hd} isSticky showToggleTheme={false} />
+  </slot>
+  <main>
+    <slot />
+  </main>
+  <slot name="footer">
+    <Footer {...fd} />
+  </slot>
+</Layout>

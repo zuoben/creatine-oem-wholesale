@@ -1,0 +1,195 @@
+---
+import { UI } from 'astrowind:config';
+import { DEFAULT_WHATSAPP_MESSAGE, WHATSAPP_PHONES } from '~/utils/whatsapp';
+---
+
+<script is:inline define:vars={{ defaultTheme: UI.theme }}>
+  if (window.basic_script) {
+    return;
+  }
+
+  window.basic_script = true;
+
+  if (!window.anchor_scroll_handler) {
+    window.anchor_scroll_handler = true;
+
+    document.addEventListener(
+      'click',
+      function (e) {
+        const link = e.target.closest('a[href^="#"]');
+        if (!link || link.target === '_blank') return;
+
+        const hash = link.getAttribute('href');
+        if (!hash || hash.length <= 1 || window.location.hash !== hash) return;
+
+        const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+        if (!target) return;
+
+        e.preventDefault();
+        target.scrollIntoView({ block: 'start' });
+      },
+      false
+    );
+  }
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }
+
+  const initTheme = function () {
+    if (document.documentElement.classList.contains('theme-mahjong')) {
+      document.documentElement.classList.remove('dark');
+      return;
+    }
+    if ((defaultTheme && defaultTheme.endsWith(':only')) || (!localStorage.theme && defaultTheme !== 'system')) {
+      applyTheme(defaultTheme.replace(':only', ''));
+    } else if (
+      localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      applyTheme('dark');
+    } else {
+      applyTheme('light');
+    }
+  };
+  initTheme();
+
+  function attachEvent(selector, event, fn) {
+    const matches = typeof selector === 'string' ? document.querySelectorAll(selector) : selector;
+    if (matches && matches.length) {
+      matches.forEach((elem) => {
+        elem.addEventListener(event, (e) => fn(e, elem), false);
+      });
+    }
+  }
+
+  const isMobileHeader = () => window.matchMedia('(max-width: 767px)').matches;
+
+  const applyHeaderScrollState = function () {
+    if (typeof window.awApplyHeaderScrollState === 'function') {
+      window.awApplyHeaderScrollState();
+      return;
+    }
+
+    const header = document.querySelector('#header[data-aw-sticky-header]');
+    if (!header) return;
+    header.classList.toggle('scroll', window.scrollY > 60);
+    if (typeof window.awSyncHeaderSpacer === 'function') window.awSyncHeaderSpacer();
+  };
+
+  const initStickyHeaderScroll = function () {
+    if (typeof window.awInitStickyHeaderScroll === 'function') {
+      window.awInitStickyHeaderScroll();
+      return;
+    }
+    applyHeaderScrollState();
+  };
+
+  const closeMobileMenu = function () {
+    document.querySelector('[data-aw-toggle-menu]')?.classList.remove('expanded');
+    document.body.classList.remove('overflow-hidden');
+    document.getElementById('header')?.classList.remove('h-screen');
+    document.getElementById('header')?.classList.remove('expanded');
+    document.getElementById('header')?.classList.remove('bg-page');
+    document.querySelector('#header nav')?.classList.add('hidden');
+    document.querySelector('#header > div > div:last-child')?.classList.add('hidden');
+    applyHeaderScrollState();
+  };
+
+  const onLoad = function () {
+
+    attachEvent('#header nav', 'click', function () {
+      closeMobileMenu();
+    });
+
+    attachEvent('[data-aw-close-menu-on-mobile]', 'click', function () {
+      if (isMobileHeader()) {
+        closeMobileMenu();
+      }
+    });
+
+    attachEvent('[data-aw-toggle-menu]', 'click', function (_, elem) {
+      elem.classList.toggle('expanded');
+      document.body.classList.toggle('overflow-hidden');
+      document.getElementById('header')?.classList.toggle('h-screen');
+      document.getElementById('header')?.classList.toggle('expanded');
+      document.getElementById('header')?.classList.toggle('bg-page');
+      document.querySelector('#header nav')?.classList.toggle('hidden');
+      document.querySelector('#header > div > div:last-child')?.classList.toggle('hidden');
+    });
+
+    attachEvent('[data-aw-toggle-color-scheme]', 'click', function () {
+      if (defaultTheme.endsWith(':only') || document.documentElement.classList.contains('theme-mahjong')) {
+        return;
+      }
+
+      document.documentElement.classList.toggle('dark');
+      localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    });
+
+    attachEvent('[data-aw-social-share]', 'click', function (_, elem) {
+      const network = elem.getAttribute('data-aw-social-share');
+      const url = encodeURIComponent(elem.getAttribute('data-aw-url'));
+      const text = encodeURIComponent(elem.getAttribute('data-aw-text'));
+
+      let href;
+      switch (network) {
+        case 'facebook':
+          href = `https://www.facebook.com/sharer.php?u=${url}`;
+          break;
+        case 'twitter':
+          href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+          break;
+        case 'linkedin':
+          href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${text}`;
+          break;
+        case 'whatsapp':
+          href = `https://wa.me/?text=${text}%20${url}`;
+          break;
+        case 'mail':
+          href = `mailto:?subject=%22${text}%22&body=${text}%20${url}`;
+          break;
+
+        default:
+          return;
+      }
+
+      const newlink = document.createElement('a');
+      newlink.target = '_blank';
+      newlink.href = href;
+      newlink.click();
+    });
+
+    const screenSize = window.matchMedia('(max-width: 767px)');
+    screenSize.addEventListener('change', function () {
+      closeMobileMenu();
+    });
+
+    initStickyHeaderScroll();
+  };
+  const onPageShow = function () {
+    closeMobileMenu();
+    applyHeaderScrollState();
+  };
+
+  initStickyHeaderScroll();
+
+  window.onload = onLoad;
+  window.onpageshow = onPageShow;
+</script>
+
+<script is:inline define:vars={{ waPhones: WHATSAPP_PHONES, waMsg: DEFAULT_WHATSAPP_MESSAGE }}>
+  function applyWhatsAppLinks() {
+    var phone = waPhones[new Date().getDate() % 2 === 1 ? 0 : 1];
+    var url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(waMsg);
+    document.querySelectorAll('a[href*="wa.me/861337"], a[href*="wa.me/861338"]').forEach(function (a) {
+      a.href = url;
+    });
+  }
+  applyWhatsAppLinks();
+  document.addEventListener('astro:page-load', applyWhatsAppLinks);
+</script>

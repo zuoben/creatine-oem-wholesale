@@ -1,0 +1,105 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Features from '~/components/widgets/Features.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { getSiteUrl } from '~/utils/site-url';
+import { ORGANIZATION_ID } from '~/utils/organization-schema';
+import { BREADCRUMB_HOME, BREADCRUMB_WHOLESALE, buildBreadcrumbList } from '~/utils/breadcrumb-schema';
+
+const siteUrl = getSiteUrl();
+const pagePath = '/wholesale';
+const quoteHref = '/contact?looking=Wholesale%20pricing#inquiry-form';
+
+const metadata = {
+  title: 'Wholesale Creatine | Carton Specs & Price List',
+  description:
+    'Wholesale creatine monohydrate powder and gummies — carton specs, MOQ tiers, distributor and gym accounts. Request a wholesale price list.',
+  ignoreTitleTemplate: true,
+};
+
+const faqItems = [
+  {
+    title: 'Who is wholesale for?',
+    description:
+      'Distributors, gyms/retailers, and online sellers who need <strong>standard carton SKUs</strong> rather than full custom OEM programs.',
+  },
+  {
+    title: 'How do I get pricing?',
+    description:
+      'Submit the <a href="/contact?looking=Wholesale%20pricing#inquiry-form" class="underline text-primary">wholesale inquiry</a> with expected volume and ship-to country. We share carton MOQs and price-list guidance.',
+  },
+  {
+    title: 'Can wholesale buyers also request samples?',
+    description: 'Yes. Select <strong>Sample</strong> or note sample needs on the form before first carton order.',
+  },
+];
+
+const breadcrumbSchema = buildBreadcrumbList([
+  { name: BREADCRUMB_HOME.en, path: '/' },
+  { name: BREADCRUMB_WHOLESALE.en, path: pagePath },
+]);
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Wholesale"
+    actions={[
+      { variant: 'primary', text: 'Request price list', href: quoteHref, icon: 'tabler:file-invoice' },
+      { text: 'OEM / private label', href: '/oem' },
+    ]}
+  >
+    <Fragment slot="title">
+      Wholesale Creatine <span class="text-accent dark:text-white">Cartons</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Standard creatine powder and gummy SKUs for distributors, gyms, and online sellers — carton specs, MOQ tiers, and
+      account onboarding via inquiry.
+    </Fragment>
+  </Hero>
+
+  <Features
+    tagline="Wholesale offer"
+    title="What wholesale partners receive"
+    columns={2}
+    items={[
+      { title: 'Carton specs', description: 'Clear units-per-carton and pack-out notes for powder and gummy SKUs (confirmed on quote).', icon: 'tabler:box' },
+      { title: 'MOQ tiers', description: 'Trial carton MOQs and better tiers for pallet / ongoing monthly volume.', icon: 'tabler:chart-arrows-vertical' },
+      { title: 'Account application', description: 'Tell us buyer type and channel — we guide documents and first-order terms.', icon: 'tabler:user' },
+      { title: 'Reorder pathway', description: 'Stable SKUs for repeat monthly purchases after the first approved shipment.', icon: 'tabler:check' },
+    ]}
+  />
+
+  <Steps
+    title="Open a wholesale account"
+    items={[
+      { title: 'Apply', description: 'Submit buyer type, volume, and destination.', icon: 'tabler:file-invoice' },
+      { title: 'Price list', description: 'Receive carton MOQs and pricing guidance.', icon: 'tabler:tag' },
+      { title: 'Sample (optional)', description: 'Validate SKU before first carton buy.', icon: 'tabler:flask' },
+      { title: 'Order & reorder', description: 'Ship cartons and set a reorder cadence.', icon: 'tabler:truck-delivery' },
+    ]}
+  />
+
+  <FAQs title="Wholesale FAQ" items={faqItems} />
+
+  <CallToAction
+    title="Get wholesale pricing"
+    subtitle="We’ll reply with carton MOQs and next steps for your channel."
+    actions={[{ variant: 'primary', text: 'Wholesale inquiry', href: quoteHref }]}
+  />
+
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: metadata.title,
+      description: metadata.description,
+      url: `${siteUrl}${pagePath}`,
+      publisher: { '@id': ORGANIZATION_ID },
+    })}
+  />
+</Layout>

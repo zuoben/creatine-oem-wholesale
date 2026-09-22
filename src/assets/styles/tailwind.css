@@ -1,0 +1,185 @@
+@import 'tailwindcss';
+
+@plugin "@tailwindcss/typography";
+
+@variant dark (&:where(.dark, .dark *));
+
+@custom-variant intersect (&:not([no-intersect]));
+
+@theme {
+  --color-primary: var(--aw-color-primary);
+  --color-secondary: var(--aw-color-secondary);
+  --color-accent: var(--aw-color-accent);
+  --color-default: var(--aw-color-text-default);
+  --color-muted: var(--aw-color-text-muted);
+
+  --font-sans:
+    'var(--aw-font-sans, ui-sans-serif)', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: 'var(--aw-font-serif, ui-serif)', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-heading: 'var(--aw-font-heading, ui-sans-serif)', ui-sans-serif, system-ui, sans-serif;
+
+  --animate-fade: fadeInUp 1s both;
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(2rem);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@utility bg-page {
+  background-color: var(--aw-color-bg-page);
+}
+
+@utility bg-dark {
+  background-color: var(--aw-color-bg-page-dark);
+}
+
+@utility bg-light {
+  background-color: var(--aw-color-bg-page);
+}
+
+@utility text-page {
+  color: var(--aw-color-text-page);
+}
+
+@utility text-muted {
+  color: var(--aw-color-text-muted);
+}
+
+/* Inline links — same teal as designer page */
+@utility text-link {
+  @apply text-primary underline-offset-2 hover:underline dark:text-accent;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white font-medium text-center text-sm sm:text-base text-slate-700 leading-snug transition py-2.5 px-5 md:px-6 ease-in duration-200 focus:ring-primary focus:ring-offset-2 focus:ring-2 hover:bg-slate-50 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 cursor-pointer whitespace-nowrap;
+}
+
+@utility btn-primary {
+  @apply btn font-semibold bg-primary text-white border-primary hover:bg-secondary hover:border-secondary hover:text-white dark:text-white dark:bg-primary dark:border-primary dark:hover:border-secondary dark:hover:bg-secondary dark:hover:text-white;
+}
+
+@utility btn-secondary {
+  @apply btn;
+}
+
+@utility btn-tertiary {
+  @apply btn border-none shadow-none bg-transparent text-muted hover:text-slate-900 hover:bg-transparent dark:bg-transparent dark:text-slate-400 dark:hover:text-white dark:hover:bg-transparent;
+}
+
+[data-aw-header-spacer] {
+  height: 4.5rem;
+}
+
+#header > div:first-child {
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+#header.scroll > div:first-child {
+  @apply bg-page md:bg-white/90 md:backdrop-blur-md;
+  box-shadow: 0 0.375rem 1.5rem 0 rgb(140 152 164 / 13%);
+}
+.dark #header.scroll > div:first-child,
+#header.scroll.dark > div:first-child {
+  @apply bg-page md:bg-slate-950/90 border-b border-slate-700/40;
+  box-shadow: none;
+}
+
+#header.expanded {
+  overflow: visible;
+}
+
+#header.expanded nav {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 70px !important;
+  padding: 0 5px;
+  z-index: 10;
+}
+
+.dropdown:focus .dropdown-menu,
+.dropdown:focus-within .dropdown-menu,
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+[astro-icon].icon-light > * {
+  stroke-width: 1.2;
+}
+
+[astro-icon].icon-bold > * {
+  stroke-width: 2.4;
+}
+
+[data-aw-toggle-menu] path {
+  @apply transition;
+}
+[data-aw-toggle-menu].expanded g > path:first-child {
+  @apply -rotate-45 translate-y-[15px] translate-x-[-3px];
+}
+[data-aw-toggle-menu].expanded g > path:last-child {
+  @apply rotate-45 translate-y-[-8px] translate-x-[14px];
+}
+
+.dd *:first-child {
+  margin-top: 0;
+}
+
+/* Native anchor scroll offsets for fixed UI chrome */
+html:has([data-aw-sticky-header]) {
+  scroll-padding-top: 5rem;
+}
+
+@media (max-width: 767px) {
+  html[data-ad-landing] {
+    scroll-padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+html[data-ad-landing='header'] {
+  scroll-padding-top: 17rem;
+}
+
+/* reCAPTCHA v2 is fixed ~304px — prevent horizontal page scroll on narrow phones */
+.recaptcha-scale {
+  max-width: 100%;
+}
+@media (max-width: 360px) {
+  .recaptcha-scale {
+    transform: scale(0.88);
+    transform-origin: top left;
+    /* reserve roughly scaled height so layout doesn't collapse */
+    height: 68px;
+  }
+}
+@media (max-width: 320px) {
+  .recaptcha-scale {
+    transform: scale(0.78);
+    height: 61px;
+  }
+}
+
+/* Defensive: long unbroken tokens / media never force page-wide scroll */
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+code,
+pre {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

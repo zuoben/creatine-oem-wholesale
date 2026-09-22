@@ -1,0 +1,91 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Features from '~/components/widgets/Features.astro';
+import Content from '~/components/widgets/Content.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { getSiteUrl } from '~/utils/site-url';
+import { buildAboutPageSchema, buildManufacturingPlantSchema, ORGANIZATION_ID } from '~/utils/organization-schema';
+import { BREADCRUMB_HOME, BREADCRUMB_ABOUT, buildBreadcrumbList } from '~/utils/breadcrumb-schema';
+
+const siteUrl = getSiteUrl();
+const pagePath = '/quality';
+
+const metadata = {
+  title: 'Quality & Compliance | Crest Creatine',
+  description:
+    'Crest Creatine quality overview — manufacturing controls, COA pathways, third-party testing support, and US dietary supplement (DSHEA) disclaimer for OEM and wholesale partners.',
+  ignoreTitleTemplate: true,
+};
+
+const breadcrumbSchema = buildBreadcrumbList([
+  { name: BREADCRUMB_HOME.en, path: '/' },
+  { name: BREADCRUMB_ABOUT.en, path: pagePath },
+]);
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Quality & Compliance"
+    actions={[
+      { variant: 'primary', text: 'Request documentation', href: '/contact#inquiry-form' },
+      { text: 'OEM programs', href: '/oem' },
+    ]}
+  >
+    <Fragment slot="title">
+      Quality systems for <span class="text-accent dark:text-white">B2B partners</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Manufacturing discipline, lot documentation, and testing pathways — without disease-treatment claims.
+    </Fragment>
+  </Hero>
+
+  <Features
+    title="What we emphasize"
+    columns={2}
+    items={[
+      { title: 'Incoming & in-process checks', description: 'Material and process controls aligned to dietary supplement manufacturing expectations.', icon: 'tabler:check' },
+      { title: 'COA pathways', description: 'Lot-level certificates of analysis discussed during quote for qualifying orders.', icon: 'tabler:check' },
+      { title: 'Third-party testing', description: 'Optional third-party lab testing can be arranged depending on SKU and destination market.', icon: 'tabler:test-pipe' },
+      { title: 'Export packing', description: 'Carton integrity and labeling coordination for international B2B shipments.', icon: 'tabler:package' },
+    ]}
+  />
+
+  <Content>
+    <Fragment slot="content">
+      <h2 class="text-2xl font-bold mb-3">US dietary supplement disclaimer</h2>
+      <p class="text-muted mb-3">
+        Crest Creatine products are intended for use as <strong>dietary supplements</strong>. These statements have not
+        been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or
+        prevent any disease.
+      </p>
+      <p class="text-muted mb-3">
+        Brand owners and distributors are responsible for compliant labeling, claims, and marketing in their markets
+        (including DSHEA requirements in the United States). We do not provide medical advice.
+      </p>
+      <p class="text-sm text-muted border-l-4 border-slate-300 pl-4">
+        Working name: <strong>Crest Creatine</strong> (provisional). Site URL provisional:
+        <code>https://creatine-oem-wholesale.pages.dev</code>.
+      </p>
+    </Fragment>
+  </Content>
+
+  <CallToAction
+    title="Ask about COA & testing for your SKU"
+    actions={[{ variant: 'primary', text: 'Contact quality / sales', href: '/contact#inquiry-form' }]}
+  />
+
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(buildAboutPageSchema())} />
+  <script type="application/ld+json" set:html={JSON.stringify(buildManufacturingPlantSchema())} />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: metadata.title,
+      url: `${siteUrl}${pagePath}`,
+      publisher: { '@id': ORGANIZATION_ID },
+    })}
+  />
+</Layout>

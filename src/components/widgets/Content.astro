@@ -1,0 +1,174 @@
+---
+import { Icon } from 'astro-icon/components';
+import { twMerge } from 'tailwind-merge';
+import Button from '~/components/ui/Button.astro';
+import Headline from '~/components/ui/Headline.astro';
+import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
+import Image from '~/components/common/Image.astro';
+import type { Content as Props } from '~/types';
+
+const {
+  title = await Astro.slots.render('title'),
+  subtitle = await Astro.slots.render('subtitle'),
+  tagline,
+  content = await Astro.slots.render('content'),
+  callToAction,
+  items = [],
+  columns,
+  image = await Astro.slots.render('image'),
+  isReversed = false,
+  isAfterContent = false,
+
+  id,
+  isDark = false,
+  classes = {},
+  bg = await Astro.slots.render('bg'),
+} = Astro.props;
+
+const columnsClass =
+  columns === 4
+    ? 'lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2'
+    : columns === 3
+      ? 'lg:grid-cols-3 sm:grid-cols-2'
+      : columns === 2
+        ? 'sm:grid-cols-2'
+        : columns === 1
+          ? 'grid-cols-1'
+          : '';
+
+const hasImage = Boolean(
+  image && (typeof image === 'string' || (typeof image === 'object' && image !== null && 'src' in image && image.src))
+);
+
+const hasEmbed = Astro.slots.has('embed');
+
+const itemColumns = columns ?? (hasImage && items.length >= 3 ? 2 : undefined);
+const itemColumnsClass =
+  itemColumns === 4
+    ? 'lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2'
+    : itemColumns === 3
+      ? 'lg:grid-cols-3 sm:grid-cols-2'
+      : itemColumns === 2
+        ? 'sm:grid-cols-2'
+        : itemColumns === 1
+          ? 'grid-cols-1'
+          : columnsClass;
+---
+
+<WidgetWrapper
+  id={id}
+  isDark={isDark}
+  containerClass={`max-w-7xl mx-auto ${isAfterContent ? 'pt-0 md:pt-0 lg:pt-0' : ''} ${classes?.container ?? ''}`}
+  bg={bg}
+>
+  <Headline
+    title={title}
+    subtitle={subtitle}
+    tagline={tagline}
+    classes={{
+      container: 'max-w-xl sm:mx-auto lg:max-w-2xl',
+      title: 'text-4xl md:text-5xl font-bold tracking-tighter mb-4 font-heading',
+      subtitle: 'max-w-3xl mx-auto sm:text-center text-xl text-muted dark:text-slate-400',
+    }}
+  />
+  <div class="mx-auto max-w-7xl p-4 md:px-8">
+    <div
+      class:list={[
+        hasImage
+          ? ['md:flex md:items-center md:gap-10 lg:gap-14', isReversed ? 'md:flex-row-reverse' : '']
+          : 'max-w-3xl mx-auto',
+      ]}
+    >
+      <div class:list={['min-w-0', hasImage && 'md:flex-1']}>
+        {content && (
+          <div
+            class:list={[
+              'text-base leading-relaxed text-muted dark:text-slate-400',
+              items.length > 0 ? 'mb-5' : hasEmbed ? 'mb-0' : 'mb-8',
+            ]}
+            set:html={content}
+          />
+        )}
+
+        {
+          hasEmbed && (
+            <div class="my-6 w-full">
+              <slot name="embed" />
+            </div>
+          )
+        }
+
+        {
+          callToAction && (
+            <div class="mb-6 text-primary">
+              <Button variant="link" {...callToAction} />
+            </div>
+          )
+        }
+
+        {
+          items.length > 0 && (
+            <div class:list={['grid gap-4 md:gap-5', itemColumnsClass]}>
+              {items.map(({ title: itemTitle, description, icon, callToAction }) => (
+                <div>
+                  <div class="flex gap-3">
+                    <div class="flex shrink-0 justify-center pt-0.5">
+                      <Icon
+                        name={icon || 'tabler:check'}
+                        class="flex h-6 w-6 items-center justify-center rounded-full bg-green-600 p-1 text-gray-50 dark:bg-green-700"
+                      />
+                    </div>
+                    <div class="min-w-0">
+                      {itemTitle && <h3 class="text-base font-semibold leading-snug dark:text-white">{itemTitle}</h3>}
+                      {description && (
+                        <p
+                          class:list={[
+                            { 'mt-1.5': itemTitle },
+                            'text-sm leading-relaxed text-muted dark:text-slate-400',
+                          ]}
+                          set:html={description}
+                        />
+                      )}
+                      {callToAction && (
+                        <div class:list={[{ 'mt-2': itemTitle || description }, 'text-sm font-medium dark:text-white']}>
+                          <Button variant="link" {...callToAction} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        }
+      </div>
+      {
+        hasImage && (
+          <div
+            class={twMerge(
+              'mt-8 min-w-0 md:mt-0 md:w-[42%] md:max-w-md md:shrink-0',
+              classes?.image as string
+            )}
+          >
+            <div class="overflow-hidden rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-white/10">
+              {typeof image === 'string' ? (
+                <Fragment set:html={image} />
+              ) : (
+                <Image
+                  class="w-full h-auto bg-gray-200 dark:bg-slate-800"
+                  width={640}
+                  height={640}
+                  widths={[400, 640, 800]}
+                  sizes="(max-width: 768px) 100vw, 512px"
+                  layout="responsive"
+                  format="webp"
+                  {...image}
+                />
+              )}
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</WidgetWrapper>

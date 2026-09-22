@@ -1,0 +1,50 @@
+---
+import { GTM_ID } from '~/config/gtm';
+
+export interface Props {
+  /** Official GTM: `head` as high in <head> as possible; `noscript` immediately after <body>. */
+  snippet: 'head' | 'noscript';
+}
+
+const { snippet } = Astro.props;
+---
+
+{
+  snippet === 'head' && (
+    <script is:inline define:vars={{ gtmId: GTM_ID }}>
+      (function () {
+        if (!gtmId || window.__gtmDeferred) return;
+        window.__gtmDeferred = true;
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        function loadGtm() {
+          if (window.__gtmLoaded) return;
+          window.__gtmLoaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtm.js?id=' + gtmId;
+          document.head.appendChild(s);
+        }
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadGtm, { timeout: 4000 });
+        } else {
+          window.addEventListener('load', function () {
+            setTimeout(loadGtm, 2000);
+          });
+        }
+      })();
+    </script>
+  )
+}
+
+{
+  snippet === 'noscript' && (
+    <noscript>
+      <iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"></iframe>
+    </noscript>
+  )
+}

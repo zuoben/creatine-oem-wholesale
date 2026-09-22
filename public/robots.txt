@@ -1,0 +1,28 @@
+User-agent: *
+Disallow: /landing/
+Disallow: /internal/
+
+# Search / answer crawlers (citation). Training crawlers inherit User-agent: *.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-CloudVertexBot
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /

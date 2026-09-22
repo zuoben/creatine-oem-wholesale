@@ -1,0 +1,23 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+
+const metadata = {
+  title: 'Page Not Found',
+  description: 'The page you requested does not exist on Crest Creatine.',
+  ignoreTitleTemplate: true,
+  robots: { index: false, follow: true },
+};
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    actions={[
+      { variant: 'primary', text: 'Go home', href: '/' },
+      { text: 'Contact', href: '/contact' },
+    ]}
+  >
+    <Fragment slot="title">404 — Page not found</Fragment>
+    <Fragment slot="subtitle">That URL is not part of the Crest Creatine B2B site. Try Home, OEM, Wholesale, or Contact.</Fragment>
+  </Hero>
+</Layout>

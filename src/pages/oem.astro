@@ -1,0 +1,140 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Features from '~/components/widgets/Features.astro';
+import Content from '~/components/widgets/Content.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { getSiteUrl } from '~/utils/site-url';
+import { ORGANIZATION_ID } from '~/utils/organization-schema';
+import { BREADCRUMB_HOME, BREADCRUMB_OEM, buildBreadcrumbList } from '~/utils/breadcrumb-schema';
+
+const siteUrl = getSiteUrl();
+const pagePath = '/oem';
+const quoteHref = '/contact?looking=OEM%2FPrivate%20label#inquiry-form';
+
+const metadata = {
+  title: 'Private Label Creatine OEM | Powder & Gummies',
+  description:
+    'Private label creatine manufacturer — creatine monohydrate powder and gummies OEM, custom flavors and packaging, samples, MOQ guidance, COA support. Request an OEM quote.',
+  ignoreTitleTemplate: true,
+};
+
+const faqItems = [
+  {
+    title: 'What is your typical OEM MOQ?',
+    description:
+      'MOQ depends on format (powder vs gummies), flavor count, and packaging. We support <strong>trial MOQs</strong> for pilots and higher tiers for ongoing production — confirm on the inquiry form.',
+  },
+  {
+    title: 'Can you do private label creatine gummies?',
+    description:
+      'Yes. We offer <strong>private label creatine gummies</strong> with custom flavors and branded packaging, alongside powder programs.',
+  },
+  {
+    title: 'Will you help with labels and claims review?',
+    description:
+      'We can share manufacturing and documentation context for your regulatory review. We do <strong>not</strong> make disease-treatment claims; US partners remain responsible for DSHEA-compliant labeling.',
+  },
+];
+
+const breadcrumbSchema = buildBreadcrumbList([
+  { name: BREADCRUMB_HOME.en, path: '/' },
+  { name: BREADCRUMB_OEM.en, path: pagePath },
+]);
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map(({ title, description }) => ({
+    '@type': 'Question',
+    name: title,
+    acceptedAnswer: { '@type': 'Answer', text: description.replace(/<[^>]+>/g, '') },
+  })),
+};
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    tagline="OEM / Private Label"
+    actions={[
+      { variant: 'primary', text: 'Start OEM project', href: quoteHref, icon: 'tabler:send' },
+      { text: 'View wholesale', href: '/wholesale' },
+    ]}
+  >
+    <Fragment slot="title">
+      Private Label Creatine <span class="text-accent dark:text-white">OEM</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Creatine monohydrate powder and gummies for your brand — sampling, custom flavors, packaging, and compliance
+      documentation support. B2B inquiry only.
+    </Fragment>
+  </Hero>
+
+  <Features
+    id="powder"
+    tagline="Capabilities"
+    title="Powder & gummies private label"
+    columns={2}
+    items={[
+      { title: 'Creatine powder OEM', description: 'Creatine monohydrate powder — mesh options, flavors, tubs/pouches, and branded labels subject to MOQ.', icon: 'tabler:stack' },
+      { title: 'Creatine gummies OEM', description: 'Private label creatine gummies — flavor development, serving design, and retail-ready packaging.', icon: 'tabler:pill' },
+      { title: 'Custom flavors & packaging', description: 'Match your brand system: flavor profiles, bottle/pouch artwork, and carton marks.', icon: 'tabler:palette' },
+      { title: 'Certificates narrative', description: 'COA pathways, third-party testing options, and facility documentation discussed during quote — not medical claims.', icon: 'tabler:shield-check' },
+    ]}
+  />
+
+  <Content id="gummies">
+    <Fragment slot="content">
+      <h3 class="text-2xl font-bold tracking-tight mb-2">Sampling before mass production</h3>
+      <p class="text-muted">
+        Approve taste, texture, and pack-out on samples, then scale to trial MOQ or ongoing monthly volume. Share target
+        serving size, flavor direction, and ship-to country on the form.
+      </p>
+      <ul class="mt-4 space-y-2 text-muted list-disc list-inside">
+        <li>Sample kit → formula lock</li>
+        <li>Label / artwork coordination</li>
+        <li>Production schedule after deposit &amp; sign-off</li>
+      </ul>
+      <p class="mt-6 text-sm text-muted border-l-4 border-slate-300 pl-4">
+        <strong>Dietary supplement notice:</strong> Products are intended as dietary supplements under DSHEA. Statements
+        have not been evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease.
+      </p>
+    </Fragment>
+  </Content>
+
+  <Steps
+    title="OEM project path"
+    items={[
+      { title: 'Brief', description: 'Format, flavor, packaging, volume, destination.', icon: 'tabler:file-invoice' },
+      { title: 'Sample', description: 'Evaluate powder or gummies before bulk.', icon: 'tabler:flask' },
+      { title: 'Quote & MOQ', description: 'Tiered pricing for trial and ongoing runs.', icon: 'tabler:tag' },
+      { title: 'Produce & ship', description: 'QC, pack, and export for your market.', icon: 'tabler:truck-delivery' },
+    ]}
+  />
+
+  <FAQs title="OEM FAQ" items={faqItems} />
+
+  <CallToAction
+    title="Request an OEM / private label quote"
+    subtitle="Channel defaults to OEM on the contact form — add volume and packaging notes."
+    actions={[{ variant: 'primary', text: 'OEM inquiry', href: quoteHref }]}
+  />
+
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': `${siteUrl}${pagePath}#webpage`,
+      url: `${siteUrl}${pagePath}`,
+      name: metadata.title,
+      description: metadata.description,
+      isPartOf: { '@type': 'WebSite', url: `${siteUrl}/` },
+      publisher: { '@id': ORGANIZATION_ID },
+    })}
+  />
+</Layout>

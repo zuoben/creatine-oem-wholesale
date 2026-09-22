@@ -1,0 +1,1045 @@
+---
+import type { Form as Props } from '~/types';
+import Button from '~/components/ui/Button.astro';
+import { getTurnstileSiteKey } from '~/config/turnstile';
+import { SITE } from 'astrowind:config';
+import { sourceSiteFromConfig } from '~/utils/source-site';
+
+/** Where successful submits are stored in Supabase */
+export type FormStorageTarget = 'contact_inquiries' | 'designer_comments';
+
+export interface FormProps extends Props {
+  /** Unique prefix so multiple forms on one page don't clash on field ids */
+  formId?: string;
+  class?: string;
+  /** Tighter spacing / smaller controls (modals) */
+  compact?: boolean;
+  /**
+   * Lay out `inputs` in a single responsive row (e.g. Name · Email · Topic).
+   * Textarea / disclaimer / actions stay full width below.
+   */
+  inputsInline?: boolean;
+  /**
+   * Supabase table for this form.
+   * - contact_inquiries (default): quotes / WA / landing / contact
+   * - designer_comments: designer page discussion only
+   */
+  storageTarget?: FormStorageTarget;
+  /**
+   * Pin submit button at the bottom: fields scroll, actions stay fixed.
+   * Parent should be a flex column with a max-height (e.g. modal body).
+   */
+  stickyActions?: boolean;
+}
+
+const {
+  inputs = [],
+  textarea,
+  disclaimer,
+  button = 'Contact us',
+  description = '',
+  formId = 'inquiry',
+  class: className = '',
+  compact = false,
+  inputsInline = false,
+  storageTarget = 'contact_inquiries',
+  stickyActions = false,
+} = Astro.props as FormProps;
+
+const turnstileSiteKey = getTurnstileSiteKey();
+const sourceSite = sourceSiteFromConfig(SITE.site);
+
+const fieldGap = compact ? 'space-y-3' : 'space-y-6';
+const labelClass = compact ? 'block text-xs font-medium mb-1' : 'block text-sm font-medium mb-1.5';
+const fieldClass = compact
+  ? 'py-2 px-3 block w-full text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary'
+  : 'py-3 px-4 block w-full text-md rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary'
+const errorClass = compact
+  ? 'error-message text-red-600 text-xs mt-0.5 hidden'
+  : 'error-message text-red-600 text-sm mt-1 hidden';
+const disclaimerLabelClass = compact
+  ? 'cursor-pointer select-none text-xs leading-snug text-gray-600 dark:text-gray-400'
+  : 'cursor-pointer select-none text-sm text-gray-600 dark:text-gray-400';
+---
+
+<form
+  id={`${formId}-form`}
+  method="POST"
+  class:list={[
+    'relative min-w-0 max-w-full',
+    stickyActions ? 'flex min-h-0 flex-1 flex-col' : fieldGap,
+    className,
+  ]}
+  novalidate
+  data-inquiry-form
+  data-storage-target={storageTarget}
+  data-source-site={sourceSite}
+  data-turnstile-sitekey={turnstileSiteKey ?? ''}
+>
+  <div
+    class:list={[
+      fieldGap,
+      stickyActions &&
+        'min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain',
+      stickyActions && (compact ? 'px-4 py-3 sm:px-5' : 'px-5 py-4 sm:px-6 sm:py-5'),
+    ]}
+  >
+  {
+    inputs && inputs.length > 0 && (
+      <div
+        class:list={[
+          // 1 col on phones — 3-col inline fields overflow ~320px viewports
+          inputsInline ? 'grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3' : compact ? 'space-y-3' : 'space-y-6',
+        ]}
+      >
+        {inputs.map((input) => {
+          const {
+            type = 'text',
+            name,
+            label = '',
+            autocomplete = 'on',
+            placeholder = '',
+            options = [],
+            required,
+          } = input;
+          if (!name) return null;
+
+          const fieldId = `${formId}-${name}`;
+
+          // Text fields default required (legacy); select only when required: true; required: false opts out
+          const isCoreIdentity =
+            name === 'name' ||
+            name === 'email' ||
+            name === 'your-name' ||
+            name === 'your-email' ||
+            type === 'email';
+          const isRequired =
+            isCoreIdentity || (type === 'select' ? required === true : required !== false);
+
+          const wrapClass = inputsInline ? 'min-w-0' : undefined;
+          const inlineFieldClass = inputsInline
+            ? fieldClass.replace('text-sm', 'text-xs sm:text-sm').replace('text-md', 'text-sm')
+            : fieldClass;
+
+          if (type === 'hidden') {
+            return <input type="hidden" name={name} id={fieldId} value="" />;
+          }
+
+          if (type === 'select') {
+            return (
+              <div class={wrapClass}>
+                {label && (
+                  <label for={fieldId} class={labelClass}>
+                    {label}
+                    {isRequired && (
+                      <span class="text-red-500" aria-hidden="true">
+                        {' '}
+                        *
+                      </span>
+                    )}
+                  </label>
+                )}
+                <select id={fieldId} name={name} required={isRequired} class={inlineFieldClass}>
+                  <option value="">{placeholder || 'Please select…'}</option>
+                  {options.map((opt) => (
+                    <option value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                <p class={errorClass} />
+              </div>
+            );
+          }
+
+          return (
+            <div class={wrapClass}>
+              {label && (
+                <label for={fieldId} class={labelClass}>
+                  {label}
+                  {isRequired && (
+                    <span class="text-red-500" aria-hidden="true">
+                      {' '}
+                      *
+                    </span>
+                  )}
+                </label>
+              )}
+              <input
+                type={type}
+                name={name}
+                id={fieldId}
+                autocomplete={autocomplete}
+                placeholder={placeholder}
+                required={isRequired}
+                class={inlineFieldClass}
+              />
+              <p class={errorClass} />
+            </div>
+          );
+        })}
+      </div>
+    )
+  }
+
+  {
+    textarea && (
+      <div>
+        <label for={`${formId}-message`} class={labelClass}>
+          {textarea.label}
+          {(textarea.required !== false) && (
+            <span class="text-red-500" aria-hidden="true">
+              {' '}
+              *
+            </span>
+          )}
+        </label>
+        <textarea
+          id={`${formId}-message`}
+          name={textarea.name ? textarea.name : 'message'}
+          rows={textarea.rows ? textarea.rows : compact ? 3 : 5}
+          placeholder={textarea.placeholder}
+          required={textarea.required !== false}
+          class={fieldClass}
+        />
+        <p class={errorClass} />
+      </div>
+    )
+  }
+
+  {
+    disclaimer && (
+      <div class:list={['flex items-start', compact ? 'gap-2' : 'gap-3']}>
+        <input
+          id={`${formId}-disclaimer`}
+          name="disclaimer"
+          type="checkbox"
+          disabled
+          checked
+          class:list={['accent-primary shrink-0', compact ? 'mt-0.5 h-3.5 w-3.5' : 'mt-1 h-4 w-4']}
+        />
+        <label for={`${formId}-disclaimer`} class={disclaimerLabelClass}>
+          {disclaimer.label}
+        </label>
+      </div>
+    )
+  }
+
+  {/* Honeypot — clip (not off-screen) so it never expands document width on mobile */}
+  <div
+    class="pointer-events-none absolute h-px w-px overflow-hidden whitespace-nowrap opacity-0"
+    style="clip: rect(0, 0, 0, 0); clip-path: inset(50%);"
+    aria-hidden="true"
+  >
+    <label for={`${formId}-website`}>Website</label>
+    <input
+      type="text"
+      id={`${formId}-website`}
+      name="website"
+      tabindex="-1"
+      autocomplete="off"
+      value=""
+    />
+  </div>
+
+  {/* Cloudflare Turnstile */}
+  <div class:list={['min-w-0 max-w-full', compact ? '' : 'mb-2']} data-turnstile-wrap>
+    <p class={labelClass} id={`${formId}-turnstile-label`}>
+      Human verification
+      <span class="text-red-500" aria-hidden="true"> *</span>
+      <span class="sr-only"> (required)</span>
+    </p>
+    {
+      turnstileSiteKey ? (
+        <div
+          class="cf-turnstile min-h-[65px] w-full max-w-full"
+          data-turnstile-widget
+          role="group"
+          aria-required="true"
+          aria-labelledby={`${formId}-turnstile-label`}
+          aria-describedby={`${formId}-turnstile-error`}
+        />
+      ) : (
+        <p class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs break-words text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-100">
+          Cloudflare Turnstile is not configured. Set the site key in{' '}
+          <code class="break-all text-xs">src/config/turnstile.ts</code> or{' '}
+          <code class="break-all text-xs">PUBLIC_TURNSTILE_SITE_KEY</code>.
+        </p>
+      )
+    }
+    <p
+      class={errorClass}
+      id={`${formId}-turnstile-error`}
+      data-turnstile-error
+      role="alert"
+      tabindex="-1"
+    />
+  </div>
+  </div>
+
+  <div
+    class:list={[
+      stickyActions
+        ? [
+            'shrink-0 border-t border-gray-100 bg-white dark:border-slate-800 dark:bg-slate-900',
+            compact ? 'px-4 py-3 sm:px-5' : 'px-5 py-4 sm:px-6',
+          ]
+        : null,
+    ]}
+  >
+  {
+    button && (
+      <div class:list={[!stickyActions && (compact ? 'pt-1' : 'pt-4')]}>
+        <Button variant="primary" type="submit" class={`w-full${compact ? ' py-2.5 text-sm' : ''}`}>
+          {button}
+        </Button>
+      </div>
+    )
+  }
+
+  <div
+    class:list={['form-message hidden text-center', compact ? 'mt-2 text-xs' : 'mt-4 text-sm']}
+    role="status"
+    aria-live="polite"
+  >
+    {description && <p class="sr-only">{description}</p>}
+  </div>
+  </div>
+</form>
+
+<script>
+  import { getSupabaseClient } from '~/lib/supabase';
+  import type { ContactInquiryInsert } from '~/types/contact-inquiry';
+  import type { DesignerCommentInsert } from '~/types/designer-comment';
+  import { resolveClientGeo } from '~/utils/client-geo';
+  import { resolveLeadSource } from '~/utils/lead-source';
+
+  type StorageTarget = 'contact_inquiries' | 'designer_comments';
+
+  /** Internal fields that must never land in contact_inquiries.extra / comment extra */
+  const ANTI_BOT_KEYS = new Set([
+    'website',
+    'g-recaptcha-response',
+    'cf-turnstile-response',
+    'disclaimer',
+  ]);
+
+  const TURNSTILE_SCRIPT_ID = 'cf-turnstile-api';
+  const TURNSTILE_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+
+  type TurnstileApi = {
+    render: (
+      container: string | HTMLElement,
+      parameters: {
+        sitekey: string;
+        theme?: 'light' | 'dark' | 'auto';
+        size?: 'normal' | 'compact' | 'flexible';
+        callback?: (token: string) => void;
+        'expired-callback'?: () => void;
+        'error-callback'?: () => void;
+        'timeout-callback'?: () => void;
+      }
+    ) => string;
+    reset: (widgetId?: string) => void;
+    remove: (widgetId: string) => void;
+    getResponse: (widgetId?: string) => string;
+  };
+
+  declare global {
+    interface Window {
+      turnstile?: TurnstileApi;
+    }
+  }
+
+  /** True if element (or an ancestor) is display:none / visibility hidden / .hidden */
+  function isEffectivelyHidden(el: HTMLElement | null): boolean {
+    let node: HTMLElement | null = el;
+    while (node) {
+      if (node.classList?.contains('hidden')) return true;
+      const style = window.getComputedStyle(node);
+      if (style.display === 'none' || style.visibility === 'hidden') return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
+
+  function isValidEmail(email: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  /** Normalize email for storage + duplicate checks (trim + lowercase) */
+  function normalizeEmail(email: string) {
+    return email.trim().toLowerCase();
+  }
+
+  function getField(formData: FormData, ...keys: string[]) {
+    for (const key of keys) {
+      const value = formData.get(key);
+      if (typeof value === 'string' && value.trim()) return value.trim();
+    }
+    return '';
+  }
+
+  function preferredTurnstileTheme(): 'light' | 'dark' | 'auto' {
+    if (typeof document === 'undefined') return 'auto';
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  }
+
+  let turnstileScriptPromise: Promise<TurnstileApi> | null = null;
+
+  function loadTurnstileScript(): Promise<TurnstileApi> {
+    if (typeof window === 'undefined') {
+      return Promise.reject(new Error('No window'));
+    }
+    if (window.turnstile?.render) {
+      return Promise.resolve(window.turnstile);
+    }
+    if (turnstileScriptPromise) return turnstileScriptPromise;
+
+    turnstileScriptPromise = new Promise((resolve, reject) => {
+      const existing = document.getElementById(TURNSTILE_SCRIPT_ID) as HTMLScriptElement | null;
+      const waitReady = () => {
+        if (window.turnstile?.render) {
+          resolve(window.turnstile);
+        } else {
+          setTimeout(waitReady, 50);
+        }
+      };
+
+      if (existing) {
+        waitReady();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.id = TURNSTILE_SCRIPT_ID;
+      script.src = TURNSTILE_SRC;
+      script.async = true;
+      script.defer = true;
+      script.onload = waitReady;
+      script.onerror = () => {
+        turnstileScriptPromise = null;
+        reject(new Error('Failed to load Cloudflare Turnstile'));
+      };
+      document.head.appendChild(script);
+    });
+
+    return turnstileScriptPromise;
+  }
+
+  function buildPayload(
+    formData: FormData,
+    geo: Awaited<ReturnType<typeof resolveClientGeo>>
+  ): ContactInquiryInsert {
+    const knownKeys = new Set([
+      'your-name',
+      'name',
+      'your-email',
+      'email',
+      'your-message',
+      'message',
+      'your-company',
+      'company',
+      'your-channel',
+      'channel',
+      'your-product',
+      'product',
+      'product_interest',
+      'your-volume',
+      'volume',
+      'order_volume',
+      'your-market',
+      'market',
+      'your-country',
+      'phone',
+      'your-phone',
+      'whatsapp',
+      'sample_need',
+      'need_sample',
+      'material',
+      'disclaimer',
+      'contact_intent',
+      ...ANTI_BOT_KEYS,
+    ]);
+
+    const extra: Record<string, unknown> = {};
+    formData.forEach((value, key) => {
+      if (knownKeys.has(key)) return;
+      if (typeof value === 'string' && value.trim()) {
+        extra[key] = value.trim();
+      }
+    });
+
+    const detected = resolveLeadSource();
+    extra.attribution = detected.attribution;
+    if (detected.attribution.landing_page) {
+      extra.landing_page = detected.attribution.landing_page;
+    }
+
+    const company = getField(formData, 'your-company', 'company');
+    const buyerType = getField(formData, 'your-channel', 'channel');
+    const product = getField(formData, 'your-product', 'product', 'product_interest');
+    const volume = getField(formData, 'your-volume', 'volume', 'order_volume');
+    const market = getField(formData, 'your-market', 'market', 'your-country');
+    const phone = getField(formData, 'phone', 'your-phone', 'whatsapp');
+    const sampleNeed = getField(formData, 'sample_need', 'need_sample');
+    const material = getField(formData, 'material');
+    const contactIntent = getField(formData, 'contact_intent');
+    const rawMessage = getField(formData, 'your-message', 'message');
+
+    // Keep structured quote fields queryable in extra without duplicating free-text noise
+    if (volume) extra.volume = volume;
+    if (market) extra.market = market;
+    if (phone) extra.phone = phone;
+    if (sampleNeed) extra.sample_need = sampleNeed;
+    if (material) extra.material = material;
+    if (contactIntent) extra.contact_intent = contactIntent;
+
+    // Original field names as written into message (shown as-is on customers page)
+    const structuredBits = [
+      company && `Company: ${company}`,
+      buyerType && `Buyer type: ${buyerType}`,
+      product && `Product: ${product}`,
+      volume && `Volume: ${volume}`,
+      market && `Market: ${market}`,
+      sampleNeed && `Sample: ${sampleNeed}`,
+      material && `Material: ${material}`,
+      phone && `Phone/WhatsApp: ${phone}`,
+    ].filter(Boolean);
+    const message =
+      structuredBits.length > 0
+        ? [...structuredBits, rawMessage && `Notes: ${rawMessage}`].filter(Boolean).join('\n')
+        : rawMessage;
+
+    const rawEmail = getField(formData, 'your-email', 'email');
+
+    return {
+      name: getField(formData, 'your-name', 'name'),
+      email: normalizeEmail(rawEmail),
+      message,
+      company: company || null,
+      channel: buyerType || null,
+      product_interest: product || null,
+      source_page: typeof window !== 'undefined' ? window.location.href : null,
+      source_site: null,
+      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+      ip_address: geo.ip_address,
+      country: geo.country,
+      country_code: geo.country_code,
+      region: geo.region,
+      lead_source: detected.lead_source,
+      status: 'new',
+      notes: '',
+      extra,
+    };
+  }
+
+  /** Payload for designer discussion comments (table: designer_comments) */
+  function buildDesignerCommentPayload(
+    formData: FormData,
+    geo: Awaited<ReturnType<typeof resolveClientGeo>>
+  ): DesignerCommentInsert {
+    const rawEmail = getField(formData, 'your-email', 'email');
+    const topic = getField(formData, 'product_interest', 'topic') || null;
+    const message = getField(formData, 'your-message', 'message');
+    const detected = resolveLeadSource();
+
+    return {
+      name: getField(formData, 'your-name', 'name'),
+      email: normalizeEmail(rawEmail),
+      topic,
+      message,
+      source_page: typeof window !== 'undefined' ? window.location.href : null,
+      source_site: null,
+      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+      ip_address: geo.ip_address,
+      country: geo.country,
+      country_code: geo.country_code,
+      region: geo.region,
+      status: 'new',
+      notes: '',
+      extra: {
+        attribution: detected.attribution,
+        ...(detected.attribution.landing_page ? { landing_page: detected.attribution.landing_page } : {}),
+      },
+    };
+  }
+
+  function withSourceSite<T extends { source_site?: string | null }>(
+    payload: T,
+    formEl: HTMLFormElement
+  ): T {
+    const site = formEl.dataset.sourceSite?.trim().replace(/^www\./i, '').toLowerCase() || null;
+    return { ...payload, source_site: site };
+  }
+
+  function bindInquiryForm(form: HTMLFormElement) {
+    if (form.dataset.bound === '1') return;
+    form.dataset.bound = '1';
+
+    const statusEl = form.querySelector<HTMLElement>('.form-message');
+    if (!statusEl) return;
+    const messageDiv: HTMLElement = statusEl;
+
+    const siteKey = (form.dataset.turnstileSitekey || '').trim();
+    const turnstileWrap = form.querySelector<HTMLElement>('[data-turnstile-wrap]');
+    const turnstileContainer = form.querySelector<HTMLElement>('[data-turnstile-widget]');
+    const turnstileError = form.querySelector<HTMLElement>('[data-turnstile-error]');
+    const honeypotInput = form.querySelector<HTMLInputElement>('input[name="website"]');
+
+    let widgetId: string | null = null;
+
+    function resolveWidgetId(): string | null {
+      if (widgetId) return widgetId;
+      const raw = turnstileContainer?.dataset.widgetId;
+      if (raw) {
+        widgetId = raw;
+        return raw;
+      }
+      return null;
+    }
+
+    function showTurnstileError(text: string) {
+      if (turnstileError) {
+        turnstileError.textContent = text;
+        turnstileError.classList.remove('hidden');
+      }
+      turnstileContainer?.setAttribute('aria-invalid', 'true');
+    }
+
+    function clearTurnstileError() {
+      if (turnstileError) {
+        turnstileError.classList.add('hidden');
+        turnstileError.textContent = '';
+      }
+      turnstileContainer?.removeAttribute('aria-invalid');
+    }
+
+    function focusTurnstileError() {
+      turnstileWrap?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (turnstileError && !turnstileError.classList.contains('hidden')) {
+        try {
+          turnstileError.focus({ preventScroll: true });
+        } catch {
+          /* not focusable in older browsers without tabindex */
+        }
+      }
+    }
+
+    function resetTurnstile() {
+      const id = resolveWidgetId();
+      if (id === null || !window.turnstile) return;
+      try {
+        window.turnstile.reset(id);
+      } catch {
+        /* widget may already be gone after view swap */
+      }
+    }
+
+    let renderInFlight: Promise<void> | null = null;
+
+    async function ensureTurnstileRendered(force = false) {
+      if (!siteKey || !turnstileContainer) return;
+
+      if (isEffectivelyHidden(turnstileContainer)) {
+        return;
+      }
+
+      if (renderInFlight) {
+        await renderInFlight;
+        return;
+      }
+
+      if (!force && turnstileContainer.dataset.widgetId) {
+        widgetId = turnstileContainer.dataset.widgetId;
+        if (turnstileContainer.querySelector('iframe')) return;
+        delete turnstileContainer.dataset.widgetId;
+        widgetId = null;
+        turnstileContainer.innerHTML = '';
+      }
+
+      if (turnstileContainer.childElementCount > 0 && !turnstileContainer.dataset.widgetId) {
+        turnstileContainer.innerHTML = '';
+      }
+
+      renderInFlight = (async () => {
+        try {
+          clearTurnstileError();
+          const turnstile = await loadTurnstileScript();
+          if (!turnstile?.render) {
+            throw new Error('turnstile.render missing');
+          }
+          if (isEffectivelyHidden(turnstileContainer)) return;
+
+          if (turnstileContainer.dataset.widgetId && turnstileContainer.querySelector('iframe')) {
+            widgetId = turnstileContainer.dataset.widgetId;
+            return;
+          }
+
+          turnstileContainer.innerHTML = '';
+          widgetId = turnstile.render(turnstileContainer, {
+            sitekey: siteKey,
+            theme: preferredTurnstileTheme(),
+            size: 'flexible',
+            callback: () => {
+              clearTurnstileError();
+            },
+            'expired-callback': () => {
+              showTurnstileError('Verification expired. Please try again.');
+              focusTurnstileError();
+            },
+            'error-callback': () => {
+              showTurnstileError(
+                'Turnstile error (often hostname not allowed). Add this domain in Cloudflare Turnstile.'
+              );
+              focusTurnstileError();
+            },
+            'timeout-callback': () => {
+              showTurnstileError('Verification timed out. Please try again.');
+              focusTurnstileError();
+            },
+          });
+          turnstileContainer.dataset.widgetId = widgetId;
+        } catch (err) {
+          console.error('[inquiry form] Turnstile render failed', err);
+          showTurnstileError(
+            'Failed to load human verification. Check network access to challenges.cloudflare.com.'
+          );
+        } finally {
+          renderInFlight = null;
+        }
+      })();
+
+      await renderInFlight;
+    }
+
+    function getTurnstileToken(): string {
+      if (!siteKey) return '';
+
+      const id = resolveWidgetId();
+      if (id !== null && window.turnstile?.getResponse) {
+        try {
+          const fromApi = window.turnstile.getResponse(id) || '';
+          if (fromApi) return fromApi;
+        } catch {
+          /* wrong/stale widget id — fall through */
+        }
+      }
+
+      const responseField = form.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
+      return responseField?.value?.trim() || '';
+    }
+
+    function validateHumanChecks(): boolean {
+      if (honeypotInput?.value.trim()) {
+        return false;
+      }
+
+      if (!siteKey) {
+        showTurnstileError('Human verification is not configured. Please contact us via WhatsApp.');
+        focusTurnstileError();
+        return false;
+      }
+
+      const token = getTurnstileToken();
+      if (!token) {
+        const widgetLoaded = Boolean(turnstileContainer?.querySelector('iframe'));
+        if (!widgetLoaded) {
+          showTurnstileError(
+            'Human verification failed to load. Please wait a moment, refresh, or contact us via WhatsApp.'
+          );
+          void ensureTurnstileRendered(true);
+        } else {
+          showTurnstileError('Please complete the Cloudflare verification.');
+        }
+        focusTurnstileError();
+        return false;
+      }
+
+      return true;
+    }
+
+    if (!isEffectivelyHidden(turnstileContainer)) {
+      void ensureTurnstileRendered();
+    }
+
+    const onShowTurnstile = () => {
+      void ensureTurnstileRendered(true);
+    };
+    document.addEventListener('inquiry-form:show-turnstile', onShowTurnstile);
+    document.addEventListener('inquiry-form:show-recaptcha', onShowTurnstile);
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        document.removeEventListener('inquiry-form:show-turnstile', onShowTurnstile);
+        document.removeEventListener('inquiry-form:show-recaptcha', onShowTurnstile);
+      },
+      { once: true }
+    );
+
+    function setFieldError(
+      field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+      message: string
+    ) {
+      const errorEl = field.parentElement?.querySelector('.error-message');
+      field.classList.add('border-red-500', 'focus:ring-red-500');
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    function validateForm() {
+      let isValid = true;
+      const fields = form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+        'input:not([type="checkbox"]):not([type="hidden"]):not([disabled]):not([name="website"]):not([name="cf-turnstile-response"]), textarea:not([name="g-recaptcha-response"]):not([name="cf-turnstile-response"]), select'
+      );
+
+      fields.forEach((field) => {
+        const errorEl = field.parentElement?.querySelector('.error-message');
+        const value = field.value.trim();
+        const mustFill = field.required;
+
+        field.classList.remove('border-red-500', 'focus:ring-red-500');
+        if (errorEl) errorEl.classList.add('hidden');
+
+        const isEmailField =
+          ('type' in field && field.type === 'email') ||
+          field.name === 'email' ||
+          field.name === 'your-email';
+        const isMessageField = field.name === 'message' || field.name === 'your-message';
+
+        if (mustFill && !value) {
+          isValid = false;
+          setFieldError(
+            field,
+            isMessageField ? 'Please enter your message' : 'This field is required'
+          );
+        } else if (isEmailField && value && !isValidEmail(value)) {
+          isValid = false;
+          setFieldError(field, 'Please enter a valid email address');
+        }
+      });
+
+      return isValid;
+    }
+
+    function clearErrors() {
+      form.querySelectorAll('.error-message').forEach((el) => el.classList.add('hidden'));
+      form.querySelectorAll('input, textarea, select').forEach((field) => {
+        field.classList.remove('border-red-500', 'focus:ring-red-500');
+      });
+      clearTurnstileError();
+    }
+
+    function hideMessage() {
+      messageDiv.classList.add('hidden');
+      messageDiv.innerHTML = '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      hideMessage();
+      clearErrors();
+
+      if (!validateForm()) return;
+      if (!validateHumanChecks()) {
+        if (honeypotInput?.value.trim()) {
+          messageDiv.innerHTML = `
+            <p class="text-red-600 font-medium">❌ Sending failed. Please try again later or contact us via WhatsApp.</p>
+          `;
+          messageDiv.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const originalText = submitBtn?.textContent ?? 'Send';
+      const isWaLeadForm = form.id === 'wa-lead-form';
+      let submitFailed = false;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.setAttribute('aria-busy', 'true');
+        if (isWaLeadForm) {
+          submitBtn.innerHTML = `
+            <span class="inline-flex items-center justify-center gap-2">
+              <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"></path>
+              </svg>
+              <span>Saving your details…</span>
+            </span>
+          `;
+        } else {
+          submitBtn.textContent = 'Sending...';
+        }
+      }
+
+      try {
+        const supabase = getSupabaseClient();
+        if (!supabase) {
+          throw new Error('Supabase not configured');
+        }
+
+        const formData = new FormData(form);
+        const geo = await resolveClientGeo();
+        const storage = (form.dataset.storageTarget || 'contact_inquiries') as StorageTarget;
+        const isDesignerComment = storage === 'designer_comments';
+
+        let name = '';
+        let email = '';
+        let message = '';
+        let company: string | null = null;
+        let topic: string | null = null;
+        let commentId: string | null = null;
+        let commentCreatedAt: string | null = null;
+
+        if (isDesignerComment) {
+          const payload = withSourceSite(buildDesignerCommentPayload(formData, geo), form);
+          name = payload.name;
+          email = payload.email;
+          message = payload.message ?? '';
+          topic = payload.topic ?? null;
+
+          if (!name || !email) {
+            throw new Error('Missing required fields');
+          }
+          if (!message.trim()) {
+            const msgField = form.querySelector<HTMLTextAreaElement>(
+              'textarea[name="message"], textarea[name="your-message"]'
+            );
+            if (msgField) setFieldError(msgField, 'Please enter your message');
+            throw new Error('Missing message');
+          }
+
+          let insertResult = await supabase
+            .from('designer_comments')
+            .insert(payload)
+            .select('id, name, topic, message, created_at')
+            .single();
+          if (insertResult.error && /source_site/i.test(insertResult.error.message)) {
+            const { source_site: _ignored, ...rest } = payload;
+            insertResult = await supabase
+              .from('designer_comments')
+              .insert(rest)
+              .select('id, name, topic, message, created_at')
+              .single();
+          }
+          const { data: inserted, error } = insertResult;
+          if (error) {
+            console.error('[designer comment form]', error);
+            throw error;
+          }
+          commentId = inserted?.id ?? null;
+          commentCreatedAt = inserted?.created_at ?? null;
+          if (inserted?.name) name = inserted.name;
+          if (inserted?.message != null) message = inserted.message;
+          if (inserted?.topic !== undefined) topic = inserted.topic;
+        } else {
+          const payload = withSourceSite(buildPayload(formData, geo), form);
+          name = payload.name;
+          email = payload.email;
+          message = payload.message ?? '';
+          company = payload.company ?? null;
+
+          if (!name || !email) {
+            throw new Error('Missing required fields');
+          }
+          if (!message.trim()) {
+            const msgField = form.querySelector<HTMLTextAreaElement>(
+              'textarea[name="message"], textarea[name="your-message"]'
+            );
+            if (msgField) setFieldError(msgField, 'Please enter your message');
+            throw new Error('Missing message');
+          }
+
+          // Always insert a new row so the same email can have multiple timed inquiries
+          let { error } = await supabase.from('contact_inquiries').insert(payload);
+          if (error && /source_site/i.test(error.message)) {
+            const { source_site: _ignored, ...rest } = payload;
+            ({ error } = await supabase.from('contact_inquiries').insert(rest));
+          }
+          if (error && /lead_source/i.test(error.message) && payload.lead_source === 'ai') {
+            ({ error } = await supabase.from('contact_inquiries').insert({ ...payload, lead_source: 'other' }));
+          }
+          if (error) {
+            console.error('[inquiry form]', error);
+            throw error;
+          }
+        }
+
+        // WA lead gate shows its own success UI — skip generic message there
+        if (!isWaLeadForm) {
+          messageDiv.innerHTML = isDesignerComment
+            ? `<p class="text-green-600 font-medium">✅ Thanks — your comment was posted. We read every suggestion.</p>`
+            : `<p class="text-green-600 font-medium">✅ We have received your message and will reply as soon as possible.</p>`;
+          messageDiv.classList.remove('hidden');
+        }
+
+        // WA lead gate emits whatsapp_lead_form_success itself — do not also fire form_submission_success
+        if (!isWaLeadForm) {
+          const dataLayer = (window as Window & { dataLayer?: Record<string, unknown>[] }).dataLayer;
+          dataLayer?.push({
+            event: isDesignerComment ? 'designer_comment_success' : 'form_submission_success',
+          });
+        }
+
+        // Notify listeners (e.g. WhatsApp lead gate / designer thread) before reset
+        form.dispatchEvent(
+          new CustomEvent('inquiry-form:success', {
+            bubbles: true,
+            detail: {
+              name,
+              email,
+              message,
+              company,
+              topic,
+              storage,
+              commentId,
+              createdAt: commentCreatedAt,
+            },
+          })
+        );
+
+        form.reset();
+        clearErrors();
+        resetTurnstile();
+
+        // Keep WA button locked until the success panel replaces the form
+        if (isWaLeadForm && submitBtn) {
+          submitBtn.innerHTML = `
+            <span class="inline-flex items-center justify-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Opening WhatsApp…</span>
+            </span>
+          `;
+        }
+      } catch (error) {
+        submitFailed = true;
+        console.error('[inquiry form] submit failed', error);
+        messageDiv.innerHTML = `
+          <p class="text-red-600 font-medium">❌ Sending failed. Please try again later or contact us via WhatsApp.</p>
+        `;
+        messageDiv.classList.remove('hidden');
+        resetTurnstile();
+      } finally {
+        // Restore button for normal forms, or WA form after failure
+        if (submitBtn && (!isWaLeadForm || submitFailed)) {
+          submitBtn.disabled = false;
+          submitBtn.removeAttribute('aria-busy');
+          submitBtn.textContent = originalText;
+        }
+      }
+    });
+  }
+
+  function initInquiryForms() {
+    document.querySelectorAll<HTMLFormElement>('form[data-inquiry-form]').forEach(bindInquiryForm);
+  }
+
+  initInquiryForms();
+  document.addEventListener('astro:page-load', initInquiryForms);
+  document.addEventListener('astro:after-swap', initInquiryForms);
+</script>

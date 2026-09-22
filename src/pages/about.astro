@@ -1,0 +1,18 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+const metadata = {
+  title: 'About → Quality',
+  description: 'Redirecting to Quality & Compliance.',
+  robots: { index: false, follow: true },
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="py-16 text-center">
+    <p class="text-muted mb-4">About content lives on our Quality &amp; Compliance page.</p>
+    <p><a class="btn btn-primary" href="/quality">Go to Quality</a></p>
+  </section>
+  <meta http-equiv="refresh" content="0;url=/quality" />
+</Layout>
