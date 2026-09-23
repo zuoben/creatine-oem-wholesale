@@ -37,7 +37,7 @@ export default defineConfig({
     },
   },
 
-  site: 'https://creatine-oem-wholesale.pages.dev',
+  site: 'https://creatine.tradeglo.net',
 
   output: 'static',
 

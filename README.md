@@ -3,7 +3,7 @@
 B2B static site for **private label / OEM creatine** and **wholesale creatine** (powder & gummies). Built with Astro (static output) for Cloudflare Pages.
 
 Provisional brand: **Crest Creatine**  
-Provisional URL: `https://creatine-oem-wholesale.pages.dev`
+Production URL: `https://creatine.tradeglo.net`
 
 ## Pages
 
@@ -41,7 +41,11 @@ Output: `dist/`
 4. Framework preset: Astro (or None)
 5. Optional env (form): `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY`, `PUBLIC_TURNSTILE_SITE_KEY` — form no-ops gracefully if unset (same pattern as mahjong site)
 
-Custom domain can replace the `*.pages.dev` URL in `src/config.yaml` later.
+## Custom domain
+
+Production URL: `https://creatine.tradeglo.net`  
+DNS: CNAME `creatine` → Worker `creatine-oem-wholesale` (or Cloudflare custom domain on the Worker).  
+`wrangler.toml` already lists `creatine.tradeglo.net` as `custom_domain`. Formal deploy waits on Cloudflare API token.
 
 ## SEO seeds (on-page)
 

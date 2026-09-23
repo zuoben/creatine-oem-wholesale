@@ -20,7 +20,9 @@ export function stripWww(host: string): string {
 }
 
 const CREATINE_ALIASES = new Set([
+  'creatine.tradeglo.net',
   'creatine-oem-wholesale.pages.dev',
+  'creatine-oem-wholesale.carefree-phalange.workers.dev',
   'localhost',
   '127.0.0.1',
 ]);
@@ -28,10 +30,10 @@ const CREATINE_ALIASES = new Set([
 export function canonicalSourceSite(value: string | null | undefined, fallback: string): string {
   const host = hostnameFromUrl(value);
   if (!host) return stripWww(fallback);
-  if (CREATINE_ALIASES.has(host)) return 'creatine-oem-wholesale.pages.dev';
+  if (CREATINE_ALIASES.has(host)) return 'creatine.tradeglo.net';
   return host;
 }
 
 export function sourceSiteFromConfig(siteUrl: string | undefined): string {
-  return hostnameFromUrl(siteUrl) ?? 'creatine-oem-wholesale.pages.dev';
+  return hostnameFromUrl(siteUrl) ?? 'creatine.tradeglo.net';
 }
