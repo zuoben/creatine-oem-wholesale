@@ -43,7 +43,7 @@ const {
 
 const whatsappUrl = whatsappUrlProp || getWhatsAppUrl();
 
-/** Shared FAB chrome. Public site recolors via html.theme-mahjong [data-fab]. */
+/** Shared FAB chrome. Public site recolors via html.theme-creatine [data-fab]. */
 const fabBase =
   'fixed right-5 sm:right-6 z-50 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full shadow-lg ring-1 ring-black/5 transition-all duration-300 hover:scale-105 hover:shadow-xl dark:ring-white/10';
 const fabIcon = 'w-6 h-6 sm:w-7 sm:h-7 text-white';
@@ -57,10 +57,10 @@ const fabIcon = 'w-6 h-6 sm:w-7 sm:h-7 text-white';
   data-aw-close-menu-on-mobile
   data-fab="whatsapp"
   class:list={[fabBase, 'bottom-16 bg-primary hover:bg-secondary']}
-  aria-label="Chat on WhatsApp about American Mah Jongg wholesale"
+  aria-label="Chat on WhatsApp about Crest Creatine OEM and wholesale"
 >
   <Icon name="tabler:brand-whatsapp" class={fabIcon} aria-hidden="true" />
-  <span class="sr-only">Chat on WhatsApp about American Mah Jongg wholesale</span>
+  <span class="sr-only">Chat on WhatsApp about Crest Creatine OEM and wholesale</span>
 </a>
 
 <!-- Contact: quote modal (teal primary — designer theme) -->
@@ -72,12 +72,12 @@ const fabIcon = 'w-6 h-6 sm:w-7 sm:h-7 text-white';
       data-aw-close-menu-on-mobile
       class:list={[fabBase, 'bottom-34 cursor-pointer bg-primary hover:bg-secondary']}
       data-fab="contact"
-      aria-label="Contact Hi Mah Jongg"
+      aria-label="Contact Crest Creatine"
       aria-haspopup="dialog"
       aria-controls="fab-contact-modal"
     >
       <Icon name="tabler:mail" class={fabIcon} aria-hidden="true" />
-      <span class="sr-only">Contact Hi Mah Jongg</span>
+      <span class="sr-only">Contact Crest Creatine</span>
     </button>
   ) : (
     <a
@@ -85,10 +85,10 @@ const fabIcon = 'w-6 h-6 sm:w-7 sm:h-7 text-white';
       data-aw-close-menu-on-mobile
       class:list={[fabBase, 'bottom-34 bg-primary hover:bg-secondary']}
       data-fab="contact"
-      aria-label="Contact Hi Mah Jongg"
+      aria-label="Contact Crest Creatine"
     >
       <Icon name="tabler:mail" class={fabIcon} aria-hidden="true" />
-      <span class="sr-only">Contact Hi Mah Jongg</span>
+      <span class="sr-only">Contact Crest Creatine</span>
     </a>
   )
 }
