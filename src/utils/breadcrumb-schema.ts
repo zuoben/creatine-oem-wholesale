@@ -9,6 +9,7 @@ export const BREADCRUMB_HOME = { en: 'Home' };
 export const BREADCRUMB_ABOUT = { en: 'Quality' };
 export const BREADCRUMB_OEM = { en: 'OEM' };
 export const BREADCRUMB_WHOLESALE = { en: 'Wholesale' };
+export const BREADCRUMB_PRODUCTS = { en: 'Products' };
 export const BREADCRUMB_CONTACT = { en: 'Contact' };
 
 export function buildBreadcrumbList(crumbs: BreadcrumbCrumb[]) {

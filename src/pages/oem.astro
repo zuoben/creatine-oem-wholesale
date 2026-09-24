@@ -15,9 +15,9 @@ const pagePath = '/oem';
 const quoteHref = '/contact?looking=OEM%2FPrivate%20label#inquiry-form';
 
 const metadata = {
-  title: 'Private Label Creatine OEM | Powder & Gummies',
+  title: 'Private Label Creatine OEM | Gummies, Powder & Capsules',
   description:
-    'Private label creatine manufacturer — creatine monohydrate powder and gummies OEM, custom flavors and packaging, samples, MOQ guidance, COA support. Request an OEM quote.',
+    'Private label creatine manufacturer — creatine monohydrate gummies, powder, and capsules OEM. Starting configs, custom flavors and packaging, samples, MOQ guidance, COA support. Request an OEM quote.',
   ignoreTitleTemplate: true,
 };
 
@@ -25,12 +25,22 @@ const faqItems = [
   {
     title: 'What is your typical OEM MOQ?',
     description:
-      'MOQ depends on format (powder vs gummies), flavor count, and packaging. We support <strong>trial MOQs</strong> for pilots and higher tiers for ongoing production — confirm on the inquiry form.',
+      'MOQ depends on format, flavor count, and packaging. <strong>Gummy</strong> trial/program MOQs commonly start around <strong>1,000 units</strong> for standard bottle programs (customized packaging often higher). <strong>Powder</strong> private-label trials often fall in the <strong>500–1,000 unit</strong> range; <strong>capsule</strong> programs commonly start around <strong>1,000 bottles</strong> (higher for some full custom runs). Final tiers confirmed on quote.',
+  },
+  {
+    title: 'What gummy dose architectures do you offer?',
+    description:
+      'Two common starting configurations: <strong>~1,000 mg creatine monohydrate per gummy</strong>, or <strong>~5 g creatine across a 3-gummy daily serving</strong> (e.g. 90-count ≈ 30 servings). Final serving size is locked on the approved formula and label.',
   },
   {
     title: 'Can you do private label creatine gummies?',
     description:
-      'Yes. We offer <strong>private label creatine gummies</strong> with custom flavors and branded packaging, alongside powder programs.',
+      'Yes. We offer <strong>private label creatine gummies</strong> with pectin-based / gelatin-free options where formula supports, sugar-free (0 g sugar; polyols may apply), flavor development, and PET bottle / doypack / sachet packaging — alongside powder and capsule programs.',
+  },
+  {
+    title: 'Do you offer creatine capsules?',
+    description:
+      'Yes. Capsule programs typically fill approx. <strong>750–1,000 mg</strong> per capsule with bottle counts such as 60 / 90 / 120 / 180 / 240. Shell options include gelatin, HPMC, or pullulan subject to program. Multiple capsules may be needed for a 3–5 g serving — final serving on the approved label.',
   },
   {
     title: 'Will you help with labels and claims review?',
@@ -60,6 +70,7 @@ const faqSchema = {
     tagline="OEM / Private Label"
     actions={[
       { variant: 'primary', text: 'Start OEM project', href: quoteHref, icon: 'tabler:send' },
+      { text: 'View product programs', href: '/products' },
       { text: 'View wholesale', href: '/wholesale' },
     ]}
   >
@@ -67,36 +78,91 @@ const faqSchema = {
       Private Label Creatine <span class="text-accent dark:text-white">OEM</span>
     </Fragment>
     <Fragment slot="subtitle">
-      Creatine monohydrate powder and gummies for your brand — sampling, custom flavors, packaging, and compliance
-      documentation support. B2B inquiry only.
+      Creatine monohydrate gummies, powder, and capsules for your brand — sampling, custom flavors, packaging, and
+      compliance documentation support. B2B inquiry only.
     </Fragment>
   </Hero>
 
   <Features
     id="powder"
     tagline="Capabilities"
-    title="Powder & gummies private label"
-    columns={2}
+    title="Three formats for private label"
+    subtitle="Starting configurations below — formula, pack-out, testing, and MOQ confirmed on quote. See full specs on Product programs."
+    columns={3}
     items={[
-      { title: 'Creatine powder OEM', description: 'Creatine monohydrate powder — mesh options, flavors, tubs/pouches, and branded labels subject to MOQ.', icon: 'tabler:stack' },
-      { title: 'Creatine gummies OEM', description: 'Private label creatine gummies — flavor development, serving design, and retail-ready packaging.', icon: 'tabler:pill' },
-      { title: 'Custom flavors & packaging', description: 'Match your brand system: flavor profiles, bottle/pouch artwork, and carton marks.', icon: 'tabler:palette' },
-      { title: 'Certificates narrative', description: 'COA pathways, third-party testing options, and facility documentation discussed during quote — not medical claims.', icon: 'tabler:shield-check' },
+      {
+        title: 'Creatine gummies OEM',
+        description:
+          '~1,000 mg/gummy or ~5 g across 3 gummies; 60/90-count bottles; pectin-based / gelatin-free where supported; sugar-free options (polyols may apply); PET, doypack, sachet.',
+        icon: 'tabler:candy',
+      },
+      {
+        title: 'Creatine powder OEM',
+        description:
+          '300 g / 500 g / 1 kg tubs or pouches; 25 kg bulk drums; 80 mesh & 200-mesh micronized particle-size options for fill/dispersion; unflavored + flavor development.',
+        icon: 'tabler:stack',
+      },
+      {
+        title: 'Creatine capsules OEM',
+        description:
+          'Approx. 750–1,000 mg/capsule; bottles 60–240; gelatin, HPMC, or pullulan shells subject to program. Scoop-free convenience for travel-oriented lines.',
+        icon: 'tabler:pill',
+      },
+      {
+        title: 'Custom flavors & packaging',
+        description: 'Match your brand system: flavor profiles, bottle/pouch/tub artwork, and carton marks.',
+        icon: 'tabler:palette',
+      },
+      {
+        title: 'Certificates narrative',
+        description:
+          'COA pathways, third-party testing options, and facility documentation discussed during quote — not medical claims.',
+        icon: 'tabler:shield-check',
+      },
+      {
+        title: 'MOQ guidance',
+        description:
+          'Gummy standard-bottle programs often start around 1,000 units; powder trials often 500–1,000 units; capsules commonly from ~1,000 bottles — confirm on inquiry.',
+        icon: 'tabler:package',
+      },
     ]}
   />
 
   <Content id="gummies">
     <Fragment slot="content">
-      <h3 class="text-2xl font-bold tracking-tight mb-2">Sampling before mass production</h3>
-      <p class="text-muted">
-        Approve taste, texture, and pack-out on samples, then scale to trial MOQ or ongoing monthly volume. Share target
-        serving size, flavor direction, and ship-to country on the form.
+      <h3 class="text-2xl font-bold tracking-tight mb-2">Gummies — hero private-label format</h3>
+      <p class="text-muted mb-3">
+        Convenient, pre-portioned creatine monohydrate gummies for daily sports-nutrition routines. Approve taste, texture,
+        and pack-out on samples, then scale to trial MOQ or ongoing monthly volume.
       </p>
-      <ul class="mt-4 space-y-2 text-muted list-disc list-inside">
-        <li>Sample kit → formula lock</li>
-        <li>Label / artwork coordination</li>
-        <li>Production schedule after deposit &amp; sign-off</li>
+      <ul class="mt-2 space-y-2 text-muted list-disc list-inside">
+        <li>Dose: ~1,000 mg per gummy <strong>or</strong> ~5 g across a 3-gummy serving</li>
+        <li>Packs: 60- or 90-count bottles (90 @ 3/day ≈ 30 servings); doypack &amp; sachet options</li>
+        <li>Options: pectin-based / gelatin-free where formula supports; sugar-free (0 g sugar; polyols may apply)</li>
+        <li>Quality: finished-product lot COA (creatine / creatinine where relevant), matrix assay, stability — not raw-material COA alone</li>
       </ul>
+      <p class="mt-4">
+        <a href="/products#gummies" class="underline text-primary font-medium">Full gummies program specs →</a>
+      </p>
+    </Fragment>
+  </Content>
+
+  <Content id="capsules" isAfterContent={true}>
+    <Fragment slot="content">
+      <h3 class="text-2xl font-bold tracking-tight mb-2">Capsules &amp; powder — supporting formats</h3>
+      <p class="text-muted mb-3">
+        Powder remains the volume workhorse (retail fills and bulk drums). Capsules add a scoop-free wing for convenience and
+        travel channels. Multiple capsules may be needed for a 3–5 g serving depending on fill — final serving on the approved
+        label.
+      </p>
+      <ul class="mt-2 space-y-2 text-muted list-disc list-inside">
+        <li>Powder: 300 g / 500 g / 1 kg · 25 kg drums · mesh options for process fit (not absorption claims)</li>
+        <li>Capsules: ~750–1,000 mg · 60–240 counts · gelatin / HPMC / pullulan</li>
+        <li>Sample kit → formula lock → label / artwork → production after deposit &amp; sign-off</li>
+      </ul>
+      <p class="mt-4">
+        <a href="/products" class="underline text-primary font-medium">All product programs →</a>
+      </p>
       <p class="mt-6 text-sm text-muted border-l-4 border-slate-300 pl-4">
         <strong>Dietary supplement notice:</strong> Products are intended as dietary supplements under DSHEA. Statements
         have not been evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease.
@@ -108,7 +174,7 @@ const faqSchema = {
     title="OEM project path"
     items={[
       { title: 'Brief', description: 'Format, flavor, packaging, volume, destination.', icon: 'tabler:file-invoice' },
-      { title: 'Sample', description: 'Evaluate powder or gummies before bulk.', icon: 'tabler:flask' },
+      { title: 'Sample', description: 'Evaluate gummies, powder, or capsules before bulk.', icon: 'tabler:flask' },
       { title: 'Quote & MOQ', description: 'Tiered pricing for trial and ongoing runs.', icon: 'tabler:tag' },
       { title: 'Produce & ship', description: 'QC, pack, and export for your market.', icon: 'tabler:truck-delivery' },
     ]}
@@ -118,8 +184,11 @@ const faqSchema = {
 
   <CallToAction
     title="Request an OEM / private label quote"
-    subtitle="Channel defaults to OEM on the contact form — add volume and packaging notes."
-    actions={[{ variant: 'primary', text: 'OEM inquiry', href: quoteHref }]}
+    subtitle="Channel defaults to OEM on the contact form — add format, volume, and packaging notes."
+    actions={[
+      { variant: 'primary', text: 'OEM inquiry', href: quoteHref },
+      { text: 'Product programs', href: '/products' },
+    ]}
   />
 
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />

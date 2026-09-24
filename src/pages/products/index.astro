@@ -1,0 +1,353 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Content from '~/components/widgets/Content.astro';
+import Features from '~/components/widgets/Features.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { getSiteUrl } from '~/utils/site-url';
+import { ORGANIZATION_ID } from '~/utils/organization-schema';
+import { BREADCRUMB_HOME, BREADCRUMB_PRODUCTS, buildBreadcrumbList } from '~/utils/breadcrumb-schema';
+
+const siteUrl = getSiteUrl();
+const pagePath = '/products';
+
+const oemGummies = '/contact?looking=OEM%2FPrivate%20label%20-%20Creatine%20gummies#inquiry-form';
+const oemPowder = '/contact?looking=OEM%2FPrivate%20label%20-%20Creatine%20powder#inquiry-form';
+const oemCapsules = '/contact?looking=OEM%2FPrivate%20label%20-%20Creatine%20capsules#inquiry-form';
+const wholesaleHref = '/contact?looking=Wholesale%20pricing#inquiry-form';
+
+const metadata = {
+  title: 'Private Label Creatine Gummies, Powder & Capsules OEM | Crest Creatine',
+  description:
+    'B2B creatine product programs — private label creatine gummies OEM, monohydrate powder tubs/pouches, and capsules. Starting configurations, pack options, MOQ guidance. Request a quote.',
+  ignoreTitleTemplate: true,
+};
+
+const breadcrumbSchema = buildBreadcrumbList([
+  { name: BREADCRUMB_HOME.en, path: '/' },
+  { name: BREADCRUMB_PRODUCTS.en, path: pagePath },
+]);
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Product programs"
+    actions={[
+      { variant: 'primary', text: 'OEM / private label quote', href: '/contact?looking=OEM%2FPrivate%20label#inquiry-form', icon: 'tabler:send' },
+      { text: 'Wholesale price list', href: wholesaleHref },
+    ]}
+  >
+    <Fragment slot="title">
+      Creatine formats for <span class="text-accent dark:text-white">OEM &amp; wholesale</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Starting configurations for private label creatine gummies, monohydrate powder, and capsules — pack examples and MOQ
+      guidance confirmed on quote. B2B inquiry only.
+    </Fragment>
+  </Hero>
+
+  <!-- ===== GUMMIES (HERO) ===== -->
+  <Content
+    id="gummies"
+    isReversed={false}
+    callToAction={{ text: 'Inquire about creatine gummies OEM', href: oemGummies }}
+    items={[
+      {
+        title: 'Dose architectures',
+        description:
+          '~1,000 mg creatine monohydrate per gummy <strong>or</strong> ~5 g creatine across a 3-gummy daily serving — final serving locked on approved formula and label.',
+      },
+      {
+        title: 'Pack examples',
+        description: '60-count or 90-count bottles (90 @ 3/day ≈ 30 servings). Other counts available by program.',
+      },
+      {
+        title: 'Formula options',
+        description:
+          'Pectin-based / gelatin-free where the formula supports it; sugar-free (0 g sugar — polyols may apply; do not claim polyol-free unless confirmed).',
+      },
+      {
+        title: 'Packaging',
+        description: 'PET bottle, doypack, and single-serve sachet options for retail, DTC, and travel-oriented programs.',
+      },
+      {
+        title: 'Flavor development',
+        description: 'Private-label flavor and color development around your brand brief.',
+      },
+      {
+        title: 'MOQ guidance',
+        description:
+          'Trial/program MOQs commonly start around <strong>1,000 units</strong> for standard bottle programs; customized packaging often higher — confirm on inquiry.',
+      },
+    ]}
+  >
+    <Fragment slot="content">
+      <p class="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Hero format</p>
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-3 dark:text-white">Creatine gummies</h2>
+      <p class="text-muted dark:text-slate-400 mb-4">
+        A convenient, pre-portioned creatine monohydrate gummy program for brands that want a scoop-free daily sports-nutrition
+        SKU. Choose a per-gummy or multi-gummy serving story — both are starting configurations subject to formula approval.
+      </p>
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full text-sm text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-700">
+              <th class="py-2 pr-4 font-semibold dark:text-white">Spec</th>
+              <th class="py-2 font-semibold dark:text-white">Starting configuration</th>
+            </tr>
+          </thead>
+          <tbody class="text-muted dark:text-slate-400">
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Active</td>
+              <td class="py-2">Creatine monohydrate</td>
+            </tr>
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Dose options</td>
+              <td class="py-2">~1,000 mg / gummy · or ~5 g / 3-gummy serving</td>
+            </tr>
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Bottle counts</td>
+              <td class="py-2">60 · 90 (examples)</td>
+            </tr>
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Base options</td>
+              <td class="py-2">Pectin-based / gelatin-free (where formula supports)</td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-4">Sugar claim</td>
+              <td class="py-2">Sugar-free (0 g sugar) available; polyols may apply</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-muted dark:text-slate-400 border-l-4 border-teal-400/60 pl-4">
+        <strong>Quality note:</strong> Gummy programs should include finished-product lot COA for creatine (and creatinine
+        where relevant), matrix-appropriate assay, and stability data — not raw-material COA alone. See
+        <a href="/quality" class="underline text-primary">Quality &amp; Compliance</a>.
+      </p>
+    </Fragment>
+    <Fragment slot="image">
+      <img
+        src="/images/products/creatine-gummies.svg"
+        alt="Illustration of a private label creatine gummies bottle"
+        width="640"
+        height="640"
+        class="w-full h-auto bg-sky-50 dark:bg-slate-800"
+        loading="lazy"
+        decoding="async"
+      />
+    </Fragment>
+  </Content>
+
+  <!-- ===== POWDER ===== -->
+  <Content
+    id="powder"
+    isReversed={true}
+    isAfterContent={true}
+    callToAction={{ text: 'Inquire about creatine powder OEM', href: oemPowder }}
+    items={[
+      {
+        title: 'Retail fills',
+        description: '300 g / 500 g / 1 kg tubs or pouches for finished retail programs.',
+      },
+      {
+        title: 'Bulk supply',
+        description: '25 kg drums for larger production or ingredient programs.',
+      },
+      {
+        title: 'Particle-size options',
+        description:
+          'e.g. 80 mesh and 200-mesh micronized — matched to fill-flow and dispersion needs. Not an absorption claim.',
+      },
+      {
+        title: 'Flavors',
+        description:
+          'Unflavored base plus development examples such as blue raspberry, sour apple, and fruit punch.',
+      },
+      {
+        title: 'MOQ',
+        description: 'Trial private-label powder often in the 500–1,000 unit range; tiers confirmed on quote.',
+      },
+    ]}
+  >
+    <Fragment slot="content">
+      <p class="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Core format</p>
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-3 dark:text-white">Creatine monohydrate powder</h2>
+      <p class="text-muted dark:text-slate-400 mb-4">
+        Pure creatine monohydrate powder in retail-ready tubs, pouches, or bulk formats — unflavored launch SKUs or flavored
+        line extensions developed to your brief.
+      </p>
+      <div class="overflow-x-auto mb-2">
+        <table class="w-full text-sm text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-700">
+              <th class="py-2 pr-4 font-semibold dark:text-white">Spec</th>
+              <th class="py-2 font-semibold dark:text-white">Starting configuration</th>
+            </tr>
+          </thead>
+          <tbody class="text-muted dark:text-slate-400">
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Retail fills</td>
+              <td class="py-2">300 g · 500 g · 1 kg (tub or pouch)</td>
+            </tr>
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Bulk</td>
+              <td class="py-2">25 kg drums</td>
+            </tr>
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Mesh options</td>
+              <td class="py-2">80 mesh · 200-mesh micronized (examples)</td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-4">Flavor</td>
+              <td class="py-2">Unflavored base + custom development</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </Fragment>
+    <Fragment slot="image">
+      <img
+        src="/images/products/creatine-powder.svg"
+        alt="Illustration of a creatine monohydrate powder tub"
+        width="640"
+        height="640"
+        class="w-full h-auto bg-cyan-50 dark:bg-slate-800"
+        loading="lazy"
+        decoding="async"
+      />
+    </Fragment>
+  </Content>
+
+  <!-- ===== CAPSULES ===== -->
+  <Content
+    id="capsules"
+    isReversed={false}
+    isAfterContent={true}
+    callToAction={{ text: 'Inquire about creatine capsules OEM', href: oemCapsules }}
+    items={[
+      {
+        title: 'Fill range',
+        description: 'Approx. 750–1,000 mg creatine monohydrate per capsule (final fill on approved formula).',
+      },
+      {
+        title: 'Bottle counts',
+        description: '60 / 90 / 120 / 180 / 240 as program examples.',
+      },
+      {
+        title: 'Shell options',
+        description: 'Gelatin, HPMC, or pullulan subject to program and positioning.',
+      },
+      {
+        title: 'Serving note',
+        description:
+          'Scoop-free convenience; multiple capsules may be needed for a 3–5 g serving depending on fill — final serving on the approved label.',
+      },
+      {
+        title: 'MOQ guidance',
+        description:
+          'Capsule programs commonly start around 1,000 bottles; some full custom runs are higher — confirm on inquiry.',
+      },
+    ]}
+  >
+    <Fragment slot="content">
+      <p class="text-sm font-semibold uppercase tracking-wide text-primary mb-2">Side wing</p>
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-3 dark:text-white">Creatine capsules</h2>
+      <p class="text-muted dark:text-slate-400 mb-4">
+        A scoop-free creatine monohydrate format for brands serving travel, convenience, and capsule-oriented shoppers.
+        Shell type, fill weight, and bottle count are configurable by program.
+      </p>
+      <div class="overflow-x-auto mb-2">
+        <table class="w-full text-sm text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-700">
+              <th class="py-2 pr-4 font-semibold dark:text-white">Spec</th>
+              <th class="py-2 font-semibold dark:text-white">Starting configuration</th>
+            </tr>
+          </thead>
+          <tbody class="text-muted dark:text-slate-400">
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Fill</td>
+              <td class="py-2">~750–1,000 mg / capsule</td>
+            </tr>
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-4">Counts</td>
+              <td class="py-2">60 · 90 · 120 · 180 · 240</td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-4">Shells</td>
+              <td class="py-2">Gelatin · HPMC · pullulan (program-dependent)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </Fragment>
+    <Fragment slot="image">
+      <img
+        src="/images/products/creatine-capsules.svg"
+        alt="Illustration of a creatine capsules jar"
+        width="640"
+        height="640"
+        class="w-full h-auto bg-teal-50 dark:bg-slate-800"
+        loading="lazy"
+        decoding="async"
+      />
+    </Fragment>
+  </Content>
+
+  <Features
+    tagline="Next step"
+    title="How to move from brief to quote"
+    columns={3}
+    items={[
+      {
+        title: 'Pick a format',
+        description: 'Gummies, powder, capsules — or a multi-SKU line. Share target serving and pack.',
+        icon: 'tabler:list-check',
+      },
+      {
+        title: 'Share volume & market',
+        description: 'Trial vs ongoing volume and ship-to country shape MOQ and documentation.',
+        icon: 'tabler:world',
+      },
+      {
+        title: 'Confirm on quote',
+        description: 'Specs above are starting configurations. Formula, testing, packaging, and MOQ are confirmed on inquiry.',
+        icon: 'tabler:file-check',
+      },
+    ]}
+  />
+
+  <section class="max-w-3xl mx-auto px-4 md:px-8 pb-8">
+    <p class="text-sm text-muted dark:text-slate-400 border-l-4 border-slate-300 dark:border-slate-600 pl-4">
+      <strong>Dietary supplement notice (DSHEA):</strong> Products are intended as dietary supplements. These statements have
+      not been evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Brand owners remain
+      responsible for compliant labeling and claims in their markets.
+    </p>
+  </section>
+
+  <CallToAction
+    title="Request a product-program quote"
+    subtitle="Tell us format, pack, volume, and destination — we reply on working days within 24 hours."
+    actions={[
+      { variant: 'primary', text: 'OEM inquiry', href: '/contact?looking=OEM%2FPrivate%20label#inquiry-form' },
+      { text: 'Wholesale inquiry', href: wholesaleHref },
+      { text: 'OEM overview', href: '/oem' },
+    ]}
+  />
+
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': `${siteUrl}${pagePath}#webpage`,
+      url: `${siteUrl}${pagePath}`,
+      name: metadata.title,
+      description: metadata.description,
+      isPartOf: { '@type': 'WebSite', url: `${siteUrl}/` },
+      publisher: { '@id': ORGANIZATION_ID },
+    })}
+  />
+</Layout>

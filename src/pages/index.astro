@@ -18,7 +18,7 @@ const siteUrl = getSiteUrl();
 const metadata = {
   title: 'Private Label Creatine OEM & Wholesale | Crest Creatine',
   description:
-    'B2B creatine manufacturer — OEM / private label creatine powder & gummies, wholesale carton pricing, samples, COA & third-party testing. Quote within 24 hours.',
+    'B2B creatine manufacturer — OEM / private label creatine gummies, powder & capsules, wholesale carton pricing, samples, COA & third-party testing. Quote within 24 hours.',
   ignoreTitleTemplate: true,
 };
 
@@ -31,7 +31,7 @@ const faqItems = [
   {
     title: 'What creatine formats can you private-label?',
     description:
-      'Creatine monohydrate <strong>powder</strong> and <strong>gummies</strong>, with custom flavors, serving sizes, and branded packaging options subject to MOQ.',
+      'Creatine monohydrate <strong>gummies</strong>, <strong>powder</strong>, and <strong>capsules</strong>, with custom flavors, serving sizes, and branded packaging options subject to MOQ. See <a href="/products" class="underline text-primary">product programs</a> for starting configurations.',
   },
   {
     title: 'Can I get samples before placing a bulk order?',
@@ -82,7 +82,7 @@ const faqSchema = {
       Private Label Creatine &amp; <span class="text-accent dark:text-white">Wholesale Supply</span>
     </Fragment>
     <Fragment slot="subtitle">
-      Crest Creatine helps brands and distributors source creatine monohydrate powder and gummies — OEM / private label
+      Crest Creatine helps brands and distributors source creatine monohydrate gummies, powder, and capsules — OEM / private label
       programs and standard wholesale cartons, with samples, COA support, and quotes within 24 hours.
     </Fragment>
   </Hero>
@@ -109,7 +109,7 @@ const faqSchema = {
       {
         title: 'OEM / Private Label',
         description:
-          'Custom creatine powder and gummies — flavors, packaging, branding, and compliance docs for your label. Ideal for brands launching or expanding a creatine SKU.',
+          'Custom creatine gummies, powder, and capsules — flavors, packaging, branding, and compliance docs for your label. Ideal for brands launching or expanding a creatine SKU.',
         icon: 'tabler:palette',
       },
       {
@@ -117,6 +117,37 @@ const faqSchema = {
         description:
           'Standard carton specs for distributors, gyms, retailers, and online sellers. Request a price list and account guidance via the wholesale inquiry form.',
         icon: 'tabler:truck-delivery',
+      },
+    ]}
+  />
+
+  <Features2
+    id="product-programs"
+    tagline="Product programs"
+    title="Gummies, powder & capsules"
+    subtitle="Starting configurations for private label and wholesale — dose, pack, and MOQ guidance confirmed on quote."
+    columns={3}
+    items={[
+      {
+        title: 'Creatine gummies',
+        description:
+          'Hero format: ~1,000 mg/gummy or ~5 g across 3 gummies; 60/90-count bottles; pectin-based options; flavor development.',
+        icon: 'tabler:candy',
+        callToAction: { text: 'View gummies', href: '/products#gummies' },
+      },
+      {
+        title: 'Creatine powder',
+        description:
+          '300 g / 500 g / 1 kg tubs or pouches; 25 kg drums; mesh options for fill/dispersion; unflavored + flavors.',
+        icon: 'tabler:stack',
+        callToAction: { text: 'View powder', href: '/products#powder' },
+      },
+      {
+        title: 'Creatine capsules',
+        description:
+          'Approx. 750–1,000 mg/capsule; 60–240 counts; gelatin, HPMC, or pullulan shells subject to program.',
+        icon: 'tabler:pill',
+        callToAction: { text: 'View capsules', href: '/products#capsules' },
       },
     ]}
   />
@@ -138,6 +169,7 @@ const faqSchema = {
     subtitle="Share buyer type, looking-for, and volume — we respond on working days within 24 hours."
     actions={[
       { variant: 'primary', text: 'Open inquiry form', href: '/contact#inquiry-form' },
+      { text: 'Product programs', href: '/products' },
       { text: 'OEM details', href: '/oem' },
       { text: 'Wholesale details', href: '/wholesale' },
     ]}

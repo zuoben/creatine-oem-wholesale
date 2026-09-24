@@ -2,6 +2,7 @@
 import Layout from '~/layouts/PageLayout.astro';
 import Hero from '~/components/widgets/Hero.astro';
 import Features from '~/components/widgets/Features.astro';
+import Content from '~/components/widgets/Content.astro';
 import Steps from '~/components/widgets/Steps.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
@@ -16,7 +17,7 @@ const quoteHref = '/contact?looking=Wholesale%20pricing#inquiry-form';
 const metadata = {
   title: 'Wholesale Creatine | Carton Specs & Price List',
   description:
-    'Wholesale creatine monohydrate powder and gummies — carton specs, MOQ tiers, distributor and gym accounts. Request a wholesale price list.',
+    'Wholesale creatine monohydrate powder, gummies, and capsules — carton SKU examples, MOQ tiers, distributor and gym accounts. Specs confirmed on price list. Request wholesale pricing.',
   ignoreTitleTemplate: true,
 };
 
@@ -29,7 +30,7 @@ const faqItems = [
   {
     title: 'How do I get pricing?',
     description:
-      'Submit the <a href="/contact?looking=Wholesale%20pricing#inquiry-form" class="underline text-primary">wholesale inquiry</a> with expected volume and ship-to country. We share carton MOQs and price-list guidance.',
+      'Submit the <a href="/contact?looking=Wholesale%20pricing#inquiry-form" class="underline text-primary">wholesale inquiry</a> with expected volume and ship-to country. We share carton MOQs and price-list guidance. Specs below are examples — confirmed on the price list.',
   },
   {
     title: 'Can wholesale buyers also request samples?',
@@ -48,6 +49,7 @@ const breadcrumbSchema = buildBreadcrumbList([
     tagline="Wholesale"
     actions={[
       { variant: 'primary', text: 'Request price list', href: quoteHref, icon: 'tabler:file-invoice' },
+      { text: 'Product programs', href: '/products' },
       { text: 'OEM / private label', href: '/oem' },
     ]}
   >
@@ -55,8 +57,8 @@ const breadcrumbSchema = buildBreadcrumbList([
       Wholesale Creatine <span class="text-accent dark:text-white">Cartons</span>
     </Fragment>
     <Fragment slot="subtitle">
-      Standard creatine powder and gummy SKUs for distributors, gyms, and online sellers — carton specs, MOQ tiers, and
-      account onboarding via inquiry.
+      Standard creatine powder, gummy, and capsule SKUs for distributors, gyms, and online sellers — carton specs, MOQ
+      tiers, and account onboarding via inquiry.
     </Fragment>
   </Hero>
 
@@ -72,6 +74,54 @@ const breadcrumbSchema = buildBreadcrumbList([
     ]}
   />
 
+  <Content>
+    <Fragment slot="content">
+      <h2 class="text-2xl font-bold tracking-tight mb-3 dark:text-white">Standard carton SKU examples</h2>
+      <p class="text-muted mb-4">
+        Illustrative pack-outs for planning. <strong>Units per carton, net weight, and MOQ are confirmed on the price list</strong>
+        for your destination and account tier.
+      </p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-slate-700">
+              <th class="py-2 pr-3 font-semibold dark:text-white">SKU family</th>
+              <th class="py-2 pr-3 font-semibold dark:text-white">Unit example</th>
+              <th class="py-2 font-semibold dark:text-white">Notes</th>
+            </tr>
+          </thead>
+          <tbody class="text-muted dark:text-slate-400">
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-3 font-medium dark:text-slate-200">Creatine gummies</td>
+              <td class="py-2 pr-3">60-count or 90-count PET bottle</td>
+              <td class="py-2">Carton pack-out &amp; MOQ on price list</td>
+            </tr>
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-3 font-medium dark:text-slate-200">Creatine powder</td>
+              <td class="py-2 pr-3">300 g / 500 g / 1 kg tub or pouch</td>
+              <td class="py-2">Retail fills; bulk drum programs available</td>
+            </tr>
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 pr-3 font-medium dark:text-slate-200">Creatine capsules</td>
+              <td class="py-2 pr-3">60–240 count bottles</td>
+              <td class="py-2">Where offered as standard wholesale SKU</td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-3 font-medium dark:text-slate-200">Bulk powder</td>
+              <td class="py-2 pr-3">25 kg drum</td>
+              <td class="py-2">Ingredient / production programs</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4 text-sm text-muted">
+        Need custom flavors or branded packaging instead?
+        <a href="/oem" class="underline text-primary">See OEM / private label</a>
+        or <a href="/products" class="underline text-primary">product programs</a>.
+      </p>
+    </Fragment>
+  </Content>
+
   <Steps
     title="Open a wholesale account"
     items={[
@@ -86,7 +136,7 @@ const breadcrumbSchema = buildBreadcrumbList([
 
   <CallToAction
     title="Get wholesale pricing"
-    subtitle="We’ll reply with carton MOQs and next steps for your channel."
+    subtitle="We’ll reply with carton MOQs and next steps for your channel. Specs confirmed on price list."
     actions={[{ variant: 'primary', text: 'Wholesale inquiry', href: quoteHref }]}
   />
 

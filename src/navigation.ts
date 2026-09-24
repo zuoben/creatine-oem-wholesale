@@ -4,6 +4,7 @@ export const headerData = {
   en: {
     links: [
       { text: 'Home', href: '/' },
+      { text: 'Products', href: getPermalink('/products') },
       { text: 'OEM', href: getPermalink('/oem') },
       { text: 'Wholesale', href: getPermalink('/wholesale') },
       { text: 'Quality', href: getPermalink('/quality') },
@@ -27,10 +28,12 @@ export const footerData = {
       {
         title: 'Programs',
         links: [
+          { text: 'All products', href: '/products' },
+          { text: 'Creatine Gummies', href: '/products#gummies' },
+          { text: 'Creatine Powder', href: '/products#powder' },
+          { text: 'Creatine Capsules', href: '/products#capsules' },
           { text: 'OEM / Private Label', href: '/oem' },
           { text: 'Wholesale', href: '/wholesale' },
-          { text: 'Creatine Powder', href: '/oem#powder' },
-          { text: 'Creatine Gummies', href: '/oem#gummies' },
         ],
       },
       {
