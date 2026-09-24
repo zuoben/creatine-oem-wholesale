@@ -1,4 +1,5 @@
 ---
+import type { GetStaticPaths } from 'astro';
 import Layout from '~/layouts/PageLayout.astro';
 import Hero from '~/components/widgets/Hero.astro';
 import Features2 from '~/components/widgets/Features2.astro';
@@ -7,11 +8,13 @@ import CallToAction from '~/components/widgets/CallToAction.astro';
 import ContactUs from '~/components/widgets/Contact.astro';
 import { getContactCopy } from '~/i18n/copy-pages';
 import { getInquiryForm } from '~/i18n/forms';
-import { localizePath, LOCALE_META, WHATSAPP_BY_LOCALE } from '~/i18n/locales';
+import { I18N_LOCALES, localizePath, LOCALE_META, WHATSAPP_BY_LOCALE, type Locale } from '~/i18n/locales';
 import { getWhatsAppUrl } from '~/utils/whatsapp';
 import { buildContactPageSchema } from '~/utils/organization-schema';
 
-const lang = 'en' as const;
+export const getStaticPaths = (() => I18N_LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Locale;
 const c = getContactCopy(lang);
 const inquiry = getInquiryForm(lang);
 const whatsappUrl = getWhatsAppUrl(WHATSAPP_BY_LOCALE[lang]);

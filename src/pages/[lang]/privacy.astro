@@ -1,0 +1,28 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Layout from '~/layouts/PageLayout.astro';
+import { getPrivacyCopy } from '~/i18n/copy-pages';
+import { I18N_LOCALES, localizePath, LOCALE_META, type Locale } from '~/i18n/locales';
+
+export const getStaticPaths = (() => I18N_LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Locale;
+const c = getPrivacyCopy(lang);
+const L = (path: string) => localizePath(path, lang);
+
+const metadata = {
+  title: c.title,
+  description: c.description,
+  ignoreTitleTemplate: true,
+  openGraph: { locale: LOCALE_META[lang].ogLocale },
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="mx-auto max-w-3xl px-4 py-12 md:px-8 prose prose-slate dark:prose-invert">
+    <h1>{c.title}</h1>
+    <p class="text-sm text-muted"><em>{c.updated}</em></p>
+    <div set:html={c.bodyHtml} />
+    <p><a class="underline text-primary" href={L('/contact')}>Contact</a></p>
+  </section>
+</Layout>

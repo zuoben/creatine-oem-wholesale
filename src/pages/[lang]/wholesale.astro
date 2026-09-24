@@ -1,4 +1,5 @@
 ---
+import type { GetStaticPaths } from 'astro';
 import Layout from '~/layouts/PageLayout.astro';
 import Hero from '~/components/widgets/Hero.astro';
 import Features from '~/components/widgets/Features.astro';
@@ -7,12 +8,14 @@ import Steps from '~/components/widgets/Steps.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import { getWholesaleCopy } from '~/i18n/copy-pages';
-import { localizePath, LOCALE_META } from '~/i18n/locales';
+import { I18N_LOCALES, localizePath, LOCALE_META, type Locale } from '~/i18n/locales';
 import { getSiteUrl } from '~/utils/site-url';
 import { ORGANIZATION_ID } from '~/utils/organization-schema';
 import { buildBreadcrumbList } from '~/utils/breadcrumb-schema';
 
-const lang = 'en' as const;
+export const getStaticPaths = (() => I18N_LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Locale;
 const c = getWholesaleCopy(lang);
 const siteUrl = getSiteUrl();
 const L = (path: string) => localizePath(path, lang);

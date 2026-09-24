@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import type { SitemapItem } from '@astrojs/sitemap';
 
 /** Locale prefixes used in URL paths (not hreflang codes). */
-export const SITEMAP_LOCALE_PREFIXES = ['es', 'de', 'fr', 'ja', 'zh-tw', 'ko', 'vi'] as const;
+export const SITEMAP_LOCALE_PREFIXES = ['zh-tw', 'hi', 'es', 'ar', 'fr', 'bn', 'pt', 'ru', 'ur', 'id', 'de', 'ja', 'ko', 'vi', 'th'] as const;
 
 /** Match trailingSlash: false — origin home has no slash; other paths have no trailing slash. */
 export function canonicalizeSitemapUrl(url: string): string {
