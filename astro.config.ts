@@ -39,12 +39,58 @@ export default defineConfig({
 
   site: 'https://creatine.tradeglo.net',
 
+  i18n: {
+    defaultLocale: 'en',
+    locales: [
+      'en',
+      'hi',
+      'es',
+      'ar',
+      'fr',
+      'bn',
+      'pt',
+      'ru',
+      'ur',
+      'id',
+      'de',
+      'ja',
+      'ko',
+      'vi',
+      'th',
+      { path: 'zh-tw', codes: ['zh-TW', 'zh-Hant'] },
+    ],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
+
   output: 'static',
 
   integrations: [
     sitemap({
       filter: isIndexableSitemapPage,
       serialize: serializeSitemapItem,
+      i18n: {
+        defaultLocale: 'en',
+        locales: {
+          en: 'en',
+          'zh-tw': 'zh-Hant',
+          hi: 'hi',
+          es: 'es',
+          ar: 'ar',
+          fr: 'fr',
+          bn: 'bn',
+          pt: 'pt',
+          ru: 'ru',
+          ur: 'ur',
+          id: 'id',
+          de: 'de',
+          ja: 'ja',
+          ko: 'ko',
+          vi: 'vi',
+          th: 'th',
+        },
+      },
     }),
     {
       name: 'sitemap-canonical-urls',

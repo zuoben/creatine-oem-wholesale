@@ -3,6 +3,7 @@ compatibility_date = "2026-09-22"
 
 [assets]
 directory = "./dist"
+html_handling = "drop-trailing-slash"
 
 # Custom domain (bind after Cloudflare API token / account deploy):
 # CNAME creatine.tradeglo.net → creatine-oem-wholesale.<account>.workers.dev

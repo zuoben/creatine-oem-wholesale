@@ -50,6 +50,7 @@ const PAGE_KEYS = [
   '/quality',
   '/contact',
   '/about',
+  '/faq',
   '/privacy',
   '/terms',
 ] as const;
