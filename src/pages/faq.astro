@@ -1,0 +1,73 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { getHomeCopy } from '~/i18n/copy-home';
+import { getOemCopy } from '~/i18n/copy-pages';
+import { localizePath, LOCALE_META } from '~/i18n/locales';
+import { buildOrganizationSchema } from '~/utils/organization-schema';
+import { buildBreadcrumbList } from '~/utils/breadcrumb-schema';
+
+const lang = 'en' as const;
+const home = getHomeCopy(lang);
+const oem = getOemCopy(lang);
+const L = (path: string) => localizePath(path, lang);
+
+const overviewFaqs = home.faqs;
+const oemFaqs = oem.faqs;
+const allFaqs = [...overviewFaqs, ...oemFaqs];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: allFaqs.map(({ title, description }) => ({
+    '@type': 'Question',
+    name: title,
+    acceptedAnswer: { '@type': 'Answer', text: description.replace(/<[^>]+>/g, '') },
+  })),
+};
+
+const breadcrumbSchema = buildBreadcrumbList([
+  { name: 'Home', path: '/' },
+  { name: 'FAQ', path: '/faq' },
+]);
+
+const metadata = {
+  title: 'Creatine OEM & Wholesale FAQ | Crest Creatine',
+  description:
+    'FAQ for Crest Creatine B2B buyers: private label creatine gummies, powder, capsules, MOQ, samples, COA, and wholesale cartons. Dietary supplements only.',
+  ignoreTitleTemplate: true,
+  openGraph: { locale: LOCALE_META[lang].ogLocale },
+};
+---
+
+<Layout metadata={metadata}>
+  <script type="application/ld+json" set:html={JSON.stringify(buildOrganizationSchema())} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+
+  <Hero
+    tagline="FAQ"
+    actions={[{ text: 'Request factory quote', href: `${L('/contact')}#inquiry-form`, variant: 'primary' }]}
+  >
+    <Fragment slot="title">
+      Creatine OEM & wholesale<br />
+      <span class="text-accent">FAQ for B2B buyers</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Formats, MOQ, samples, COA, and how OEM vs wholesale works — dietary supplement framing only.
+    </Fragment>
+  </Hero>
+
+  <FAQs title={home.faqTitle} items={overviewFaqs} columns={1} />
+  <FAQs title={oem.faqTitle} items={oemFaqs} columns={1} />
+
+  <CallToAction
+    title="Still need a formal quote?"
+    actions={[
+      { text: 'Contact form', href: `${L('/contact')}#inquiry-form`, variant: 'primary' },
+      { text: 'Products hub', href: L('/products') },
+    ]}
+  />
+</Layout>

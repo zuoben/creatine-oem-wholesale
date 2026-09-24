@@ -446,7 +446,7 @@ export function getHeaderFooter(locale: Locale = 'en') {
             { text: n.oemQuote, href: `${p('/contact')}?looking=OEM%2FPrivate%20label#inquiry-form` },
             { text: n.wholesalePrice, href: `${p('/contact')}?looking=Wholesale%20pricing#inquiry-form` },
             { text: n.sampleRequest, href: `${p('/contact')}?looking=Sample#inquiry-form` },
-            { text: n.faq, href: `${home}#faq` },
+            { text: n.faq, href: p('/faq') },
           ],
         },
       ],

@@ -3,3 +3,10 @@
 
 /favicon.ico
   Cache-Control: public, max-age=86400
+
+/llms.txt
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/*
+  Link: </llms.txt>; rel="llms-txt"
