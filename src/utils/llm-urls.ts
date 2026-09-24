@@ -5,6 +5,7 @@ export const LLM_UTM = {
   utm_campaign: 'llms_txt',
 } as const;
 
+const SITE_HOST = 'creatine.tradeglo.net';
 const SKIP_PATHS = new Set(['/sitemap-index.xml', '/robots.txt', '/llms.txt', '/llms-full.txt', '/rss.xml']);
 
 export function withLlmUtm(url: string): string {
@@ -15,7 +16,7 @@ export function withLlmUtm(url: string): string {
     return url;
   }
 
-  if (parsed.hostname.replace(/^www\./, '').toLowerCase() !== 'mahjonggsupplies.com') {
+  if (parsed.hostname.replace(/^www\./, '').toLowerCase() !== SITE_HOST) {
     return url;
   }
   if (SKIP_PATHS.has(parsed.pathname)) return url;
@@ -26,9 +27,10 @@ export function withLlmUtm(url: string): string {
   return parsed.toString();
 }
 
-/** Rewrite https://mahjonggsupplies.com/... links in markdown / plain text. */
-export function tagMahjonggLinksForLlm(body: string): string {
-  return body.replace(/https:\/\/mahjonggsupplies\.com\/[^\s)>\]]*/g, (url) => {
+/** Rewrite this brand's absolute links in markdown / plain text. */
+export function tagSiteLinksForLlm(body: string): string {
+  const re = new RegExp(`https://${SITE_HOST.replace(/\./g, '\\.')}/[^\\s)>\\]]*`, 'g');
+  return body.replace(re, (url) => {
     const trimmed = url.replace(/[.,;:]+$/, '');
     return withLlmUtm(trimmed) + url.slice(trimmed.length);
   });

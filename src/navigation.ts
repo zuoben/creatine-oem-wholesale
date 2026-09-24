@@ -42,7 +42,7 @@ export const footerData = {
           { text: 'OEM Quote', href: '/contact?looking=OEM%2FPrivate%20label#inquiry-form' },
           { text: 'Wholesale Price List', href: '/contact?looking=Wholesale%20pricing#inquiry-form' },
           { text: 'Sample Request', href: '/contact?looking=Sample#inquiry-form' },
-          { text: 'FAQ', href: '/#faq' },
+          { text: 'FAQ', href: '/faq' },
         ],
       },
     ],
