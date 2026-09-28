@@ -1,1 +1,4 @@
 /private-label-creatine /oem 301
+/about /quality 301
+/:lang/about /:lang/quality 301
+/sitemap.xml /sitemap-index.xml 308

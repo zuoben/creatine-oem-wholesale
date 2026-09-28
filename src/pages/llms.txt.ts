@@ -22,7 +22,6 @@ Crest Creatine supplies creatine monohydrate gummies, powder, and capsules for b
 
 ## Company
 
-- [About](https://creatine.tradeglo.net/about): Redirects to quality / company overview
 - [FAQ](https://creatine.tradeglo.net/faq): Buyer FAQ for OEM and wholesale
 
 ## Legal

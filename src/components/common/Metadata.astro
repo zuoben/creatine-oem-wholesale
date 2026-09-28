@@ -4,7 +4,7 @@ import { SEO } from 'astro-seo';
 
 import type { SEOProps } from 'astro-seo';
 
-import { SITE, METADATA, I18N } from 'astrowind:config';
+import { SITE, METADATA } from 'astrowind:config';
 import type { MetaData, MetaDataOpenGraph } from '~/types';
 import { getCanonical } from '~/utils/permalinks';
 import { getHreflangMap, getLocaleFromPath, LOCALE_META, LOCALES } from '~/i18n/locales';
@@ -116,7 +116,8 @@ const seoProps: SEOProps = {
 
 <SEO {...seoProps} />
 {
-  hreflangMap ? (
+  /* hreflang only for indexable pages that exist in every locale; never on noindex / en-only pages */
+  hreflangMap && !seoProps.noindex && (
     <>
       {LOCALES.map((loc) => (
         <link
@@ -126,11 +127,6 @@ const seoProps: SEOProps = {
         />
       ))}
       <link rel="alternate" hreflang="x-default" href={String(getCanonical(hreflangMap.en))} />
-    </>
-  ) : (
-    <>
-      <link rel="alternate" hreflang={I18N?.language || 'en'} href={canonical} />
-      <link rel="alternate" hreflang="x-default" href={canonical} />
     </>
   )
 }

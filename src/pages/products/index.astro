@@ -32,6 +32,58 @@ const breadcrumbSchema = buildBreadcrumbList([
   { name: 'Home', path: L('/') },
   { name: c.breadcrumb, path: pagePath },
 ]);
+
+const productPrograms = [
+  {
+    name: c.gummiesTitle,
+    description: c.gummiesIntro,
+    url: `${siteUrl}${pagePath}#gummies`,
+    image: `${siteUrl}/images/products/creatine-gummies.svg`,
+    category: 'Creatine gummies OEM',
+    moq: 'Trial/program MOQs commonly start around 1,000 units for standard bottle programs.',
+  },
+  {
+    name: c.powderTitle,
+    description: c.powderIntro,
+    url: `${siteUrl}${pagePath}#powder`,
+    image: `${siteUrl}/images/products/creatine-powder.svg`,
+    category: 'Creatine monohydrate powder OEM',
+    moq: 'Trial private-label powder often in the 500–1,000 unit range.',
+  },
+  {
+    name: c.capsTitle,
+    description: c.capsIntro,
+    url: `${siteUrl}${pagePath}#capsules`,
+    image: `${siteUrl}/images/products/creatine-capsules.svg`,
+    category: 'Creatine capsules OEM',
+    moq: 'Capsule programs commonly start around 1,000 bottles.',
+  },
+];
+
+const productListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Crest Creatine OEM product programs',
+  itemListElement: productPrograms.map((product, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    item: {
+      '@type': 'Product',
+      name: product.name,
+      description: product.description,
+      image: product.image,
+      url: product.url,
+      brand: { '@type': 'Brand', name: 'Crest Creatine' },
+      category: product.category,
+      offers: {
+        '@type': 'Offer',
+        url: product.url,
+        availability: 'https://schema.org/InStock',
+        description: product.moq,
+      },
+    },
+  })),
+};
 ---
 
 <Layout metadata={metadata}>
@@ -104,6 +156,7 @@ const breadcrumbSchema = buildBreadcrumbList([
   />
 
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(productListSchema)} />
   <script
     type="application/ld+json"
     set:html={JSON.stringify({
