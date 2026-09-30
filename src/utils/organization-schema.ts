@@ -93,3 +93,93 @@ export function buildContactPageSchema() {
     mainEntity: { '@id': ORGANIZATION_ID },
   };
 }
+
+/** Real Crest OEM product lines (same three programs as /products). No list prices. */
+export type CrestProductProgram = {
+  name: string;
+  description: string;
+  url: string;
+  image: string;
+  category: string;
+  moq: string;
+};
+
+export function getCrestProductPrograms(
+  siteUrl: string,
+  productsPath: string,
+  labels?: {
+    gummiesTitle: string;
+    gummiesIntro: string;
+    powderTitle: string;
+    powderIntro: string;
+    capsTitle: string;
+    capsIntro: string;
+  },
+): CrestProductProgram[] {
+  const L = labels ?? {
+    gummiesTitle: 'Creatine gummies',
+    gummiesIntro:
+      'A convenient, pre-portioned creatine monohydrate gummy program for brands that want a scoop-free daily sports-nutrition SKU.',
+    powderTitle: 'Creatine monohydrate powder',
+    powderIntro: 'Pure creatine monohydrate powder in retail-ready tubs, pouches, or bulk formats.',
+    capsTitle: 'Creatine capsules',
+    capsIntro: 'A scoop-free creatine monohydrate format for travel and convenience channels.',
+  };
+
+  return [
+    {
+      name: L.gummiesTitle,
+      description: L.gummiesIntro,
+      url: `${siteUrl}${productsPath}#gummies`,
+      image: `${siteUrl}/images/products/creatine-gummies.svg`,
+      category: 'Creatine gummies OEM',
+      moq: 'Trial/program MOQs commonly start around 1,000 units for standard bottle programs.',
+    },
+    {
+      name: L.powderTitle,
+      description: L.powderIntro,
+      url: `${siteUrl}${productsPath}#powder`,
+      image: `${siteUrl}/images/products/creatine-powder.svg`,
+      category: 'Creatine monohydrate powder OEM',
+      moq: 'Trial private-label powder often in the 500–1,000 unit range.',
+    },
+    {
+      name: L.capsTitle,
+      description: L.capsIntro,
+      url: `${siteUrl}${productsPath}#capsules`,
+      image: `${siteUrl}/images/products/creatine-capsules.svg`,
+      category: 'Creatine capsules OEM',
+      moq: 'Capsule programs commonly start around 1,000 bottles.',
+    },
+  ];
+}
+
+export function buildProductItemListSchema(
+  products: CrestProductProgram[],
+  listName = 'Crest Creatine OEM product programs',
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: listName,
+    itemListElement: products.map((product, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Product',
+        name: product.name,
+        description: product.description,
+        image: product.image,
+        url: product.url,
+        brand: { '@type': 'Brand', name: 'Crest Creatine' },
+        category: product.category,
+        offers: {
+          '@type': 'Offer',
+          url: product.url,
+          availability: 'https://schema.org/InStock',
+          description: product.moq,
+        },
+      },
+    })),
+  };
+}

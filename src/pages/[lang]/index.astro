@@ -10,9 +10,12 @@ import CallToAction from '~/components/widgets/CallToAction.astro';
 import { getHomeCopy } from '~/i18n/copy-home';
 import { I18N_LOCALES, localizePath, LOCALE_META, type Locale } from '~/i18n/locales';
 import { getSiteUrl } from '~/utils/site-url';
+import { getProductsCopy } from '~/i18n/copy-products';
 import {
   buildOrganizationSchema,
   buildManufacturingPlantSchema,
+  buildProductItemListSchema,
+  getCrestProductPrograms,
   ORGANIZATION_ID,
 } from '~/utils/organization-schema';
 
@@ -22,6 +25,7 @@ const lang = Astro.params.lang as Locale;
 const c = getHomeCopy(lang);
 const siteUrl = getSiteUrl();
 const L = (path: string) => localizePath(path, lang);
+const productsCopy = getProductsCopy(lang);
 
 const metadata = {
   title: c.title,
@@ -49,6 +53,17 @@ const faqSchema = {
     acceptedAnswer: { '@type': 'Answer', text: description.replace(/<[^>]+>/g, '') },
   })),
 };
+
+const productItemListSchema = buildProductItemListSchema(
+  getCrestProductPrograms(siteUrl, L('/products'), {
+    gummiesTitle: productsCopy.gummiesTitle,
+    gummiesIntro: productsCopy.gummiesIntro,
+    powderTitle: productsCopy.powderTitle,
+    powderIntro: productsCopy.powderIntro,
+    capsTitle: productsCopy.capsTitle,
+    capsIntro: productsCopy.capsIntro,
+  }),
+);
 ---
 
 <Layout metadata={metadata}>
@@ -108,4 +123,5 @@ const faqSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(buildManufacturingPlantSchema())} />
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(productItemListSchema)} />
 </Layout>

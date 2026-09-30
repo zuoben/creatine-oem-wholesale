@@ -12,6 +12,8 @@ import { getSiteUrl } from '~/utils/site-url';
 import {
   buildOrganizationSchema,
   buildManufacturingPlantSchema,
+  buildProductItemListSchema,
+  getCrestProductPrograms,
   ORGANIZATION_ID,
 } from '~/utils/organization-schema';
 
@@ -46,6 +48,10 @@ const faqSchema = {
     acceptedAnswer: { '@type': 'Answer', text: description.replace(/<[^>]+>/g, '') },
   })),
 };
+
+const productItemListSchema = buildProductItemListSchema(
+  getCrestProductPrograms(siteUrl, L('/products')),
+);
 ---
 
 <Layout metadata={metadata}>
@@ -105,4 +111,5 @@ const faqSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(buildManufacturingPlantSchema())} />
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(productItemListSchema)} />
 </Layout>
